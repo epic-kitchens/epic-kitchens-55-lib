@@ -1,0 +1,38 @@
+name: epic
+channels:
+  - bioconda
+  - conda-forge
+  - pytorch
+  - defaults
+dependencies:
+  - filechunkio=1.6
+  - snakemake
+  - urllib3=1.12
+  - numpy=1.14.0
+  - pandas=0.22.0
+  - pip=9.0.1
+  - python=3.6.4
+  - python-dateutil=2.6.1
+  - pytorch=0.3.1
+  - pyyaml=3.12
+  - setuptools=38.4.0
+  - torchvision=0.2.0
+  - yaml=0.1.7
+  - pip:
+    - gulpio==521.36
+    - ipykernel==4.8.0
+    - ipython==6.2.1
+    - nltk==3.2.5
+    - pypeg2==2.15.2
+    - pillow-simd==4.3.0.post0
+    - scikit-learn==0.19.1
+    - scipy==1.0.0
+    - spacy==2.0.5
+    - tables==3.4.2
+    - tensorboardx==1.0
+    - tqdm==4.19.5
+    - ujson==1.35
+    - msgpack==0.5.4 # 0.5.5 breaks spacy.
+    - "-e git+https://github.com/uob-epic/pattern.git@79c38fe4263b3028b980527c3030872a75933c36#egg=pattern"
+prefix: /home/wp/.miniconda3/envs/epic
+

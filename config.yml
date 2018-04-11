@@ -1,0 +1,8 @@
+# Path to fast storage drive on which frames/flow are written to
+local_data_root: /tmp
+# Height of extracted frames in pixels
+frame_height: 256
+# FPS to extract video at
+fps: 60
+# FFmpeg name format for frame extraction
+frame_format: frame_%010d.jpg
