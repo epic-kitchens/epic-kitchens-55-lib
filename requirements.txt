@@ -1,0 +1,7 @@
+Pygments==2.2.0
+sphinx-rtd-theme==0.2.4
+gulpio==528.43
+numpy==1.14.2
+pandas==0.22.0
+pytest
+typing
