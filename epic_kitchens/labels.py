@@ -22,3 +22,5 @@ SENTENCE_COL = "sentence"
 NOUN_SYNSET_COL = "noun_synset"
 VERB_SYNSET_COL = "verb_synset"
 POS_COL = "pos"
+
+EMPTY_NOUN_CLASS = 0
