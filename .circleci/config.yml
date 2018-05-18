@@ -27,10 +27,8 @@ jobs:
 
       - run:
           name: Type check
-          command: |
-            mypy
+          command: mypy
 
       - run:
           name: Run tests
-          command: |
-            tox
+          command: tox
