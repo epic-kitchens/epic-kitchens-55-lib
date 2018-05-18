@@ -40,8 +40,8 @@ setup(
         license='MIT',
         url='http://github.com/epic-kitchens/epic-lib',
         project_urls={
-            'Bug Tracker': '',
-            'Documentation': '',
+            'Bug Tracker': 'https://github.com/epic-kitchens/epic-lib/issues',
+            'Documentation': 'https://epic-kitchens.readthedocs.io',
             'Dataset Website': 'https://epic-kitchens.github.io/',
             'Source Code': 'http://github.com/epic-kitchens/epic-lib',
         }
