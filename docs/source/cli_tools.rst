@@ -1,0 +1,38 @@
+CLI tools
+=========
+
+Action segmentation
+-------------------
+
+A script is provided to segment frames from a video into a set of
+action-segments.
+
+
+.. code-block:: shell
+
+    $ python -m epic_kitchens.preprocessing.split_segments \
+        path/to/labels.pkl \
+        P03 \
+        path/to/frames \
+        path/to/frame-segments \
+        path/to/gulp-dir \
+        --modality RGB \
+        --fps 60 \
+        --frame-format 'frame_%010d.jpg' \
+        --of-stride 2 \
+        --of-dilation 3
+
+
+Gulp data ingestor
+------------------
+
+.. code-block:: shell
+
+    $ python -m epic_kitchens.gulp \
+        path/to/frame-segments \
+        path/to/gulp-dir \
+        path/to/labels.pkl \
+        RGB \
+        --num-workers $(nproc) \
+        --segments-per-chunk 100 \
+

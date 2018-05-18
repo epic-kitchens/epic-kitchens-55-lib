@@ -14,6 +14,7 @@ Have a look at `EPIC-mini`_ for example usage.
    :maxdepth: 2
 
    epic_kitchens.rst
+   cli_tools.rst
 
 .. _`EPIC Kitchens`: https://epic-kitchens.github.io
 .. _`EPIC-mini`: https://github.com/epic-kitchens/epic-mini
