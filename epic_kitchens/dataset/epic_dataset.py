@@ -61,8 +61,22 @@ class GulpVideoSegment(VideoSegment):
     def num_frames(self) -> int:
         return self.metadata['num_frames']
 
+    def __getitem__(self, item):
+        return self.metadata[item]
+
     def __getattr__(self, item):
         return self.metadata[item]
+
+    def __str__(self):
+        return "GulpVideoSegment[label={label}, num_frames={num_frames}]".format(
+                label=self.label, num_frames=self.num_frames
+        )
+
+    def __repr__(self):
+        return "GulpVideoSegment({metadata}, {class_getter})".format(
+                metadata=repr(self.metadata),
+                class_getter=repr(self.class_getter)
+        )
 
 
 class EpicVideoDataset(VideoDataset):
