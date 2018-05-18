@@ -4,15 +4,17 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/repo
+
     docker:
       - image: circleci/python:3.6
-    working_directory: ~/repo
 
     steps:
       - checkout
 
       - restore_cache:
-        key: deps-{{ .Branch}}-{{ checksum "requirements.txt" }}
+          keys: 
+            - deps-{{ .Branch}}-{{ checksum "requirements.txt" }}
 
       - run:
           name: Install dependencies
@@ -21,9 +23,9 @@ jobs:
             pip install -r requirements.txt
 
       - save_cache:
-        key: deps-{{ .Branch}}-{{ checksum "requirements.txt" }}
-        paths:
-          - "venv"
+          key: deps-{{ .Branch}}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
 
       - run:
           name: Type check
