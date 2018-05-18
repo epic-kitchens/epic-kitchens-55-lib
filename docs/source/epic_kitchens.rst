@@ -1,21 +1,11 @@
-epic\_kitchens
-==============
+``epic_kitchens`` package
+=========================
 
-epic\_kitchens.gulp
--------------------
-
-. automodule:: epic_kitchens.gulp
+.. automodule:: epic_kitchens
     :members:
     :undoc-members:
     :show-inheritance:
 
-epic\_kitchens.gulp.adapter
----------------------------
-
-.. automodule:: epic_kitchens.gulp.adapter
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 epic\_kitchens.dataset
 ----------------------
@@ -40,6 +30,23 @@ epic\_kitchens.dataset.video\_dataset module
     :members:
     :undoc-members:
     :show-inheritance:
+
+epic\_kitchens.gulp
+-------------------
+
+.. automodule:: epic_kitchens.gulp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+epic\_kitchens.gulp.adapter
+---------------------------
+
+.. automodule:: epic_kitchens.gulp.adapter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 epic\_kitchens.labels
 ---------------------
