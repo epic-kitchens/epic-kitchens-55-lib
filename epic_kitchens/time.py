@@ -1,3 +1,4 @@
+""" Functions for converting between frames and timestamps """
 import numpy as np
 
 _MINUTES_TO_SECONDS = 60
