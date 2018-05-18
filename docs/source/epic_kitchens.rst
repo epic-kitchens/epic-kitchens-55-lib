@@ -4,7 +4,7 @@ epic\_kitchens
 epic\_kitchens.gulp
 -------------------
 
-.. automodule:: epic_kitchens.gulp
+. automodule:: epic_kitchens.gulp
     :members:
     :undoc-members:
     :show-inheritance:
@@ -47,7 +47,6 @@ epic\_kitchens.labels
 .. automodule:: epic_kitchens.labels
     :members:
     :undoc-members:
-    :no-
     :show-inheritance:
 
 epic\_kitchens.time
