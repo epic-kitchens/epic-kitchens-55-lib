@@ -32,8 +32,12 @@ jobs:
 
       - run:
           name: Type check
-          command: make typecheck
+          command: |
+            . venv/bin/activate
+            make typecheck
 
       - run:
           name: Run tests
-          command: make test
+          command: |
+            . venv/bin/activate
+            make test
