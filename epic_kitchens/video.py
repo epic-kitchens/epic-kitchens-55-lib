@@ -112,8 +112,8 @@ def split_video_frames(modality: Modality, frame_format: str, video_annotations:
 def _split_frames_by_segment(frame_format: str, frame_iterator, segment_dir: Path, video_dir: Path):
     segment_dir_fd = os.open(str(segment_dir), os.O_RDONLY)
     try:
-        first_frame_index = None
-        last_frame_index = None
+        first_frame_index = None  # type: int
+        last_frame_index = None  # type: int
         for frame_index in frame_iterator:
             if first_frame_index is None:
                 first_frame_index = frame_index
