@@ -32,10 +32,8 @@ jobs:
 
       - run:
           name: Type check
-          command: |
-            . venv/bin/activate
-            mypy
+          command: make typecheck
 
       - run:
           name: Run tests
-          command: tox
+          command: make test
