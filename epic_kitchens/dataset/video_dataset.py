@@ -9,6 +9,10 @@ class VideoSegment(ABC):
     Represents a video segment with an associated label.
     """
     @property
+    def id(self):
+        raise NotImplementedError()
+
+    @property
     def label(self):
         raise NotImplementedError()
 
