@@ -1,11 +1,12 @@
 from . import adapter
+import pandas as pd
 
 
 if __name__ == '__main__':
     import argparse
     from gulpio import GulpIngestor
     parser = argparse.ArgumentParser(
-            'Program to gulp the EPIC dataset allowing for faster read times during training.')
+            'Gulp the EPIC dataset allowing for faster read times during training.')
     parser.add_argument('in_folder', type=str,
                         help='Directory where subdirectory is a segment name containing frames for that segment.')
     parser.add_argument('out_folder', type=str,
@@ -19,15 +20,18 @@ if __name__ == '__main__':
                         help='Size of frames.')
     parser.add_argument('--segments-per-chunk', type=int, default=100,
                         help='Number of videos per chunk to save.')
-    parser.add_argument('--num_workers', type=int, default=4,
+    parser.add_argument('-j', '--num-workers', type=int, default=4,
                         help='Number of workers to run the task.')
 
     args = parser.parse_args()
 
-    if args.modality == 'flow':
-        epic_adapter = adapter.EpicDatasetAdapter(args.in_folder, args.pickle_file, args.frame_size, args.extension)
-    elif args.modality == 'rgb':
-        epic_adapter = adapter.EpicFlowDatasetAdapter(args.in_folder, args.pickle_file, args.frame_size, args.extension)
+    labels = pd.read_pickle(args.pickle_file)
+    if args.modality.lower() == 'flow':
+        epic_adapter = adapter.EpicFlowDatasetAdapter(args.in_folder, labels, args.frame_size,
+                                                      args.extension)
+    elif args.modality.lower() == 'rgb':
+        epic_adapter = adapter.EpicDatasetAdapter(args.in_folder, labels, args.frame_size,
+                                                  args.extension)
     else:
         raise ValueError("Modality '{}' not supported".format(args.modality))
 
