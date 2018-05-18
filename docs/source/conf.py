@@ -19,15 +19,15 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 
 # -- Project information -----------------------------------------------------
 
-project = 'epic'
+project = 'epic-kitchens'
 copyright = '2018, EPIC-KITCHENS'
 author = 'EPIC-KITCHENS'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-import epic
-release = epic.__version__
+import epic_kitchens
+release = epic_kitchens.__version__
 
 
 # -- General configuration ---------------------------------------------------
