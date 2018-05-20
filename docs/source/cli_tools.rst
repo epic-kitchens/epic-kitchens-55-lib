@@ -11,12 +11,11 @@ action-segments.
 .. code-block:: shell
 
     $ python -m epic_kitchens.preprocessing.split_segments \
-        path/to/labels.pkl \
         P03 \
         path/to/frames \
         path/to/frame-segments \
-        path/to/gulp-dir \
-        --modality RGB \
+        path/to/labels.pkl \
+        RGB \
         --fps 60 \
         --frame-format 'frame_%010d.jpg' \
         --of-stride 2 \

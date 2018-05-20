@@ -11,7 +11,7 @@ if __name__ == '__main__':
                         help='Directory where subdirectory is a segment name containing frames for that segment.')
     parser.add_argument('out_folder', type=str,
                         help='Directory to store the gulped files.')
-    parser.add_argument('pickle_file', type=str,
+    parser.add_argument('labels_pkl', type=str,
                         help='Path to the pickle file which contains the meta information about the dataset.')
     parser.add_argument('modality', choices=['flow', 'rgb'])
     parser.add_argument('--extension', type=str, default='jpg',
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    labels = pd.read_pickle(args.pickle_file)
+    labels = pd.read_pickle(args.labels_pkl)
     if args.modality.lower() == 'flow':
         epic_adapter = adapter.EpicFlowDatasetAdapter(args.in_folder, labels, args.frame_size,
                                                       args.extension)
