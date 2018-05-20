@@ -10,11 +10,11 @@ docs:
 test:
 	tox
 
-package:
+dist:
 	rm -rf dist
 	python setup.py sdist
 
-upload_to_pypi: package
+upload_to_pypi: dist
 	twine upload dist/*
 
 typecheck:
