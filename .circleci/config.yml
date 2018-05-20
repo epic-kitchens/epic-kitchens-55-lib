@@ -24,6 +24,7 @@ jobs:
             . venv/bin/activate
             pip install mypy
             pip install tox
+            pip install codecov
             pip install -r requirements.txt
 
       - save_cache:
@@ -42,3 +43,4 @@ jobs:
           command: |
             . venv/bin/activate
             make test
+            codecov
