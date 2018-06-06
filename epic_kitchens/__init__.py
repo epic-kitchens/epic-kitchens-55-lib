@@ -8,4 +8,6 @@ the `EPIC Kitchens`_ dataset.
 """
 
 from . import gulp, dataset
+from .__version__ import __title__, __description__, __version__
+from .__version__ import __author__, __author_email__, __license__, __copyright__
 
