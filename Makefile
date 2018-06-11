@@ -19,3 +19,6 @@ upload_to_pypi: dist
 
 typecheck:
 	mypy $(LIBRARY_DIR) --ignore-missing-imports
+
+clean:
+	rm -rf dist
