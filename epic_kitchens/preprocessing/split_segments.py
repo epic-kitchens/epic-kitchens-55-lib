@@ -8,7 +8,7 @@ import sys
 import pandas as pd
 
 from epic_kitchens.labels import VIDEO_ID_COL
-from epic_kitchens.video import FlowModality, RGBModality, split_video_frames
+from epic_kitchens.video import Modality, FlowModality, RGBModality, split_video_frames
 
 LOG = logging.getLogger(__name__)
 
@@ -30,10 +30,10 @@ Produce a set of action segments in the directory format:
     |--- frame_0000000001.jpg
     |--- ...
     |--- frame_0000000735.jpg
-    
-    
-The final number `Z` in `PXX_YY_Z-narration` denotes the index of the segment, this can then 
-be used to look up the corresponding information on the segment such as the raw narration, 
+
+
+The final number `Z` in `PXX_YY_Z-narration` denotes the index of the segment, this can then
+be used to look up the corresponding information on the segment such as the raw narration,
 verb class, noun classes etc
 
 If segmenting optical flow then frames are contained in a `u` or `v` subdirectory.
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     if args.modality.lower() == 'rgb':
         frame_dirs = [args.frame_dir]
         links_dirs = [args.links_dir]
-        modality = RGBModality(fps=fps)
+        modality = RGBModality(fps=fps)  # type: Modality
     elif args.modality.lower() == 'flow':
         axes = ['u', 'v']
         frame_dirs = [args.frame_dir.joinpath(axis) for axis in axes]
