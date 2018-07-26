@@ -17,7 +17,8 @@ setup(
         packages=find_packages(),
         entry_points={
             'console_scripts': [
-                'gulp_epic = epic_kitchens.gulp:main'
+                'gulp_epic = epic_kitchens.gulp:main',
+                'segment_epic = epic_kitchens.preprocessing.split_segments:main'
             ],
         },
         install_requires=[

@@ -47,6 +47,22 @@ epic\_kitchens.gulp.adapter
     :undoc-members:
     :show-inheritance:
 
+epic\_kitchens.preprocessing
+----------------------------
+
+.. automodule:: epic_kitchens.preprocessing
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+epic\_kitchens.preprocessing.split\_segments
+--------------------------------------------
+
+.. automodule:: epic_kitchens.preprocessing.split_segments
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 epic\_kitchens.labels
 ---------------------

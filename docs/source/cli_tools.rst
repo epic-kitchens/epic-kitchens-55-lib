@@ -1,6 +1,8 @@
 CLI tools
 =========
 
+.. _cli_tools_action_segmentation:
+
 Action segmentation
 -------------------
 
@@ -21,6 +23,7 @@ action-segments.
         --of-stride 2 \
         --of-dilation 3
 
+.. _cli_tools_gulp_ingestor:
 
 Gulp data ingestor
 ------------------

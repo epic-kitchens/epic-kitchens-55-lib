@@ -21,3 +21,12 @@
 * Change CLI interface of `epic_kitchens.preprocessing.split_segments` to match
   that of `epic_kitchens.gulp` in terms of argument ordering and whether
   arguments are mandatory or not.
+
+
+# Version 1.2.0
+
+## Features
+
+* Expose `epic_kitchens.preprocessing.split_segments` as an entrypoint
+* Add docs for `epic_kitchens.preprocessing.*`
+

@@ -1,6 +1,8 @@
 .PHONY: all docs test
 
-LIBRARY_DIR:=epic_kitchens
+LIBRARY_DIR := epic_kitchens
+SRC_FILES := $(shell find epic_kitchens) 
+SRC_FILES += setup.py
 
 all: test
 
@@ -10,7 +12,7 @@ docs:
 test:
 	tox
 
-dist:
+dist: $(SRC_FILES)
 	rm -rf dist
 	python setup.py sdist
 

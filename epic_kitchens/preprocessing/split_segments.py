@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+"""Program for splitting frames into action segments
+See :ref:`cli_tools_action_segmentation` for usage details """
+
 import argparse
 import logging
 import os
@@ -10,13 +14,11 @@ import pandas as pd
 from epic_kitchens.labels import VIDEO_ID_COL
 from epic_kitchens.video import Modality, FlowModality, RGBModality, split_video_frames
 
-LOG = logging.getLogger(__name__)
-
-DESCRIPTION = '''\
+HELP = """\
 Process frame dumps, and a set of annotations in a pickled dataframe
 to produce a set of segmented action videos using symbolic links.
 
-``
+
 Taking a set of videos in the directory format (for RGB):
 
     P01_01
@@ -37,36 +39,12 @@ be used to look up the corresponding information on the segment such as the raw 
 verb class, noun classes etc
 
 If segmenting optical flow then frames are contained in a `u` or `v` subdirectory.
-``
-'''
+"""
+
+LOG = logging.getLogger(__name__)
 
 
-def commonpath(paths):
-    return os.path.commonpath(paths)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument('video', type=str,
-                        help='Video ID to segment')
-    parser.add_argument('frame_dir', type=lambda p: pathlib.Path(p).absolute(),
-                        help='Path to frames, if RGB should contain images, if flow, should contain u, '
-                             'v subdirectories with images')
-    parser.add_argument('links_dir', type=lambda p: pathlib.Path(p).absolute(),
-                        help='Path to save segments into')
-    parser.add_argument('labels_pkl', type=pathlib.Path,
-                        help='Path to the pickle file which contains the meta information about the dataset.')
-    parser.add_argument('modality', type=str.lower, default='rgb', choices=['rgb', 'flow'],
-                        help='Modality of frames that are being segmented')
-    parser.add_argument('--frame-format', type=str, default='frame_%010d.jpg',
-                        help='Pattern of frame filenames')
-    parser.add_argument('--fps', type=float, default=60,
-                        help='FPS of extracted frames')
-    parser.add_argument('--of-stride', type=int, default=2,
-                        help='Optical flow stride parameter used for frame extraction')
-    parser.add_argument('--of-dilation', type=int, default=3,
-                        help='Optical flow dilation parameter used for frame extraction')
-    args = parser.parse_args()
+def main(args):
     print(args.frame_dir)
     print(args.links_dir)
 
@@ -76,7 +54,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     annotations = pd.read_pickle(args.labels_pkl)
-    fps = int(args.fps)
+    fps = float(args.fps)
     if args.modality.lower() == 'rgb':
         frame_dirs = [args.frame_dir]
         links_dirs = [args.links_dir]
@@ -92,6 +70,33 @@ if __name__ == '__main__':
 
     video_annotations = annotations[annotations[VIDEO_ID_COL] == args.video]
     for frame_dir, links_dir in zip(frame_dirs, links_dirs):
-        common_root = commonpath([frame_dir, links_dir])
+        common_root = os.path.commonpath([frame_dir, links_dir])
         print(common_root)
         split_video_frames(modality, args.frame_format, video_annotations, links_dir, frame_dir)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=HELP,
+                                     formatter_class=argparse.RawTextHelpFormatter,
+                                     )
+    parser.add_argument('video', type=str,
+                        help='Video ID to segment')
+    parser.add_argument('frame_dir', type=lambda p: pathlib.Path(p).absolute(),
+                        help='Path to frames, if RGB should contain images, if flow, should contain u, '
+                             'v subdirectories with images')
+    parser.add_argument('links_dir', type=lambda p: pathlib.Path(p).absolute(),
+                        help='Path to save segments into')
+    parser.add_argument('labels_pkl', type=pathlib.Path,
+                        help='Path to the pickle file which contains the meta information about the dataset.')
+    parser.add_argument('modality', type=str.lower, default='rgb', choices=['rgb', 'flow'],
+                        help='Modality of frames that are being segmented')
+    parser.add_argument('--frame-format', type=str, default='frame_%010d.jpg',
+                        help='Pattern of frame filenames (default: %(default)s)')
+    parser.add_argument('--fps', type=float, default=60,
+                        help='FPS of extracted frames (default: %(default)s)')
+    parser.add_argument('--of-stride', type=int, default=2,
+                        help='Optical flow stride parameter used for frame extraction (default: %(default)s)')
+    parser.add_argument('--of-dilation', type=int, default=3,
+                        help='Optical flow dilation parameter used for frame extraction '
+                             '(default: %(default)s)')
+    main(parser.parse_args())

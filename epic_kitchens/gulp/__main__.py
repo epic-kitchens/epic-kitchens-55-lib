@@ -1,3 +1,6 @@
+"""Program for building GulpIO directory of frames for training
+See :ref:`cli_tools_gulp_ingestor` for usage details """
+
 from . import adapter
 import pandas as pd
 
