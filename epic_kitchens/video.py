@@ -121,7 +121,9 @@ def _split_frames_by_segment(frame_format: str, frame_iterator, segment_dir: Pat
             target_frame_filename = frame_format % (frame_index - first_frame_index + 1)
             source_frame_path = video_dir.joinpath(source_frame_filename)
             segmented_frame_path = segment_dir.joinpath(target_frame_filename)
-            assert source_frame_path.exists(), f"{source_frame_path} does not exist"
+            assert source_frame_path.exists(), "{source_frame_path} does not exist".format(
+                source_frame_path=source_frame_path
+            )
             if os.path.lexists(segmented_frame_path):
                 os.remove(str(segmented_frame_path))
             source_frame_relative_path = os.path.relpath(str(source_frame_path), start=str(segment_dir))
