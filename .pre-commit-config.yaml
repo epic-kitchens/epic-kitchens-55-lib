@@ -13,3 +13,7 @@ repos:
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
     -   id: flake8
+-   repo: https://github.com/willprice/pre-commit-hooks
+    rev: v0.0.1
+    hooks:
+    -   id: black-formatter
