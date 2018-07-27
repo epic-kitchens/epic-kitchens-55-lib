@@ -1,3 +1,20 @@
+# Version 1.2.1
+
+## Bug fix
+
+* Fix crash due to passing `Path` object to `os.path.lexists` in
+  `epic_kitchens.preprocessing.split_segments` on Python 3.5 (3.6+ supports
+  this)
+
+
+# Version 1.2.0
+
+## Features
+
+* Expose `epic_kitchens.preprocessing.split_segments` as an entrypoint
+* Add docs for `epic_kitchens.preprocessing.*`
+
+
 # Version 1.1.1
 
 ## Bug fix
@@ -21,12 +38,3 @@
 * Change CLI interface of `epic_kitchens.preprocessing.split_segments` to match
   that of `epic_kitchens.gulp` in terms of argument ordering and whether
   arguments are mandatory or not.
-
-
-# Version 1.2.0
-
-## Features
-
-* Expose `epic_kitchens.preprocessing.split_segments` as an entrypoint
-* Add docs for `epic_kitchens.preprocessing.*`
-
