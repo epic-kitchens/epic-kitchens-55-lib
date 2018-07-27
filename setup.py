@@ -37,9 +37,9 @@ setup(
             #   5 - Production/Stable
             'Development Status :: 4 - Beta',
             'Intended Audience :: Developers',
-            'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
         ],
         keywords=['dataset', 'egocentric', 'action-recogntion', 'epic', 'epic-kitchens'],
         author=about['__author__'],
