@@ -33,6 +33,12 @@ jobs:
             - "venv"
 
       - run:
+          name: Check syntax by byte compiling
+          command: |
+            . venv/bin/activate
+            make compile
+
+      - run:
           name: Type check
           command: |
             . venv/bin/activate
