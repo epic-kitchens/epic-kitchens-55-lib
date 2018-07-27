@@ -2,20 +2,14 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 version: 2
-jobs:
-  build:
+
+shared: &shared
     working_directory: ~/repo
-
-    docker:
-      - image: circleci/python:3.5
-      - image: circleci/python:3.6
-      - image: circleci/python:3.7
-
     steps:
       - checkout
 
       - restore_cache:
-          keys: 
+          keys:
             - deps-{{ .Branch}}-{{ checksum "requirements.txt" }}
 
       - run:
@@ -38,5 +32,31 @@ jobs:
           name: Run tests
           command: |
             . venv/bin/activate
-            make test
+            # If we don't specify the python version then the default
+            # 3.5 version that is part of all images is run which causes
+            # issues.
+            TOX_ENV="$(echo ${PYTHON_VERSION} | sed -E 's/([[:digit:]]).([[:digit:]]).([[:digit:]])/py\1\2/')"
+            tox -e "$TOX_ENV"
             codecov
+
+jobs:
+  py3.5:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.5
+  py3.6:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.6
+  py3.7:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.7
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - py3.5
+      - py3.6
+      - py3.7
