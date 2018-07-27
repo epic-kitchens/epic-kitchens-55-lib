@@ -32,6 +32,7 @@ class Modality(ABC):
 
 
 class RGBModality(Modality):
+
     def __init__(self, fps):
         self.fps = fps
 
@@ -42,6 +43,7 @@ class RGBModality(Modality):
 
 
 class FlowModality(Modality):
+
     def __init__(self, dilation=1, stride=1, bound=20, rgb_fps=59.94):
         self.dilation = dilation
         self.stride = stride
@@ -72,8 +74,14 @@ def iterate_frame_dir(root: Path) -> Iterator[Tuple[Path, Path]]:
             yield (person_dir, video_dir)
 
 
-def split_dataset_frames(modality: Modality, frames_dir: Path, segment_root_dir: Path,
-                         annotations: pd.DataFrame, frame_format='frame%06d.jpg', pattern=re.compile('.*')):
+def split_dataset_frames(
+    modality: Modality,
+    frames_dir: Path,
+    segment_root_dir: Path,
+    annotations: pd.DataFrame,
+    frame_format="frame%06d.jpg",
+    pattern=re.compile(".*"),
+):
     assert frames_dir.exists()
 
     frames_dir = frames_dir.resolve()
@@ -82,17 +90,33 @@ def split_dataset_frames(modality: Modality, frames_dir: Path, segment_root_dir:
 
     for person_dir, video_dir in iterate_frame_dir(frames_dir):
         if pattern.search(str(video_dir)):
-            annotations_for_video = annotations[annotations[VIDEO_ID_COL] == video_dir.name]
-            split_video_frames(modality, frame_format, annotations_for_video, segment_root_dir, video_dir)
+            annotations_for_video = annotations[
+                annotations[VIDEO_ID_COL] == video_dir.name
+            ]
+            split_video_frames(
+                modality,
+                frame_format,
+                annotations_for_video,
+                segment_root_dir,
+                video_dir,
+            )
 
 
-def split_video_frames(modality: Modality, frame_format: str, video_annotations: pd.DataFrame,
-                       segment_root_dir: Path, video_dir: Path):
+def split_video_frames(
+    modality: Modality,
+    frame_format: str,
+    video_annotations: pd.DataFrame,
+    segment_root_dir: Path,
+    video_dir: Path,
+):
     for annotation in video_annotations.itertuples():
         segment_dir_name = "{video_id}_{index}_{narration}".format(
-                index=annotation.Index,
-                video_id=getattr(annotation, VIDEO_ID_COL),
-                narration=getattr(annotation, NARRATION_COL).strip().lower().replace(' ', '-')
+            index=annotation.Index,
+            video_id=getattr(annotation, VIDEO_ID_COL),
+            narration=getattr(annotation, NARRATION_COL)
+            .strip()
+            .lower()
+            .replace(" ", "-"),
         )
         segment_dir = segment_root_dir.joinpath(segment_dir_name)
         segment_dir.mkdir(parents=True, exist_ok=True)
@@ -100,16 +124,20 @@ def split_video_frames(modality: Modality, frame_format: str, video_annotations:
         stop_timestamp = getattr(annotation, STOP_TS_COL)
         frame_iterator = modality.frame_iterator(start_timestamp, stop_timestamp)
 
-        LOG.info('Linking {video_id} - {narration} - {start}--{stop}'.format(
+        LOG.info(
+            "Linking {video_id} - {narration} - {start}--{stop}".format(
                 video_id=getattr(annotation, VIDEO_ID_COL),
                 narration=getattr(annotation, NARRATION_COL),
                 start=start_timestamp,
-                stop=stop_timestamp
-        ))
+                stop=stop_timestamp,
+            )
+        )
         _split_frames_by_segment(frame_format, frame_iterator, segment_dir, video_dir)
 
 
-def _split_frames_by_segment(frame_format: str, frame_iterator, segment_dir: Path, video_dir: Path):
+def _split_frames_by_segment(
+    frame_format: str, frame_iterator, segment_dir: Path, video_dir: Path
+):
     segment_dir_fd = os.open(str(segment_dir), os.O_RDONLY)
     try:
         first_frame_index = -1
@@ -121,18 +149,28 @@ def _split_frames_by_segment(frame_format: str, frame_iterator, segment_dir: Pat
             target_frame_filename = frame_format % (frame_index - first_frame_index + 1)
             source_frame_path = video_dir.joinpath(source_frame_filename)
             segmented_frame_path = segment_dir.joinpath(target_frame_filename)
-            assert source_frame_path.exists(), "{source_frame_path} does not exist".format(
+            assert (
+                source_frame_path.exists()
+            ), "{source_frame_path} does not exist".format(
                 source_frame_path=source_frame_path
             )
             if os.path.lexists(str(segmented_frame_path)):
                 os.remove(str(segmented_frame_path))
-            source_frame_relative_path = os.path.relpath(str(source_frame_path), start=str(segment_dir))
-            os.symlink(str(source_frame_relative_path), str(segmented_frame_path), dir_fd=segment_dir_fd)
+            source_frame_relative_path = os.path.relpath(
+                str(source_frame_path), start=str(segment_dir)
+            )
+            os.symlink(
+                str(source_frame_relative_path),
+                str(segmented_frame_path),
+                dir_fd=segment_dir_fd,
+            )
             last_frame_index = frame_index
-        LOG.info('  Linked [{first},{last}] -> [1, {last_target}]'.format(
+        LOG.info(
+            "  Linked [{first},{last}] -> [1, {last_target}]".format(
                 first=first_frame_index,
                 last=last_frame_index,
-                last_target=last_frame_index - first_frame_index + 1
-        ))
+                last_target=last_frame_index - first_frame_index + 1,
+            )
+        )
     finally:
         os.close(segment_dir_fd)

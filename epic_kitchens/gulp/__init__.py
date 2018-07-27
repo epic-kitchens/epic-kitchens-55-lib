@@ -5,4 +5,3 @@ which can then be used with the ``EpicVideoDataset`` classes.
 """
 
 from . import adapter
-

@@ -50,53 +50,86 @@ def main(args):
 
     logging.basicConfig(level=logging.INFO)
     if not args.labels_pkl.exists():
-        LOG.error('Annotations pickle: \'{}\' does not exist'.format(args.labels_pkl))
+        LOG.error("Annotations pickle: '{}' does not exist".format(args.labels_pkl))
         sys.exit(1)
 
     annotations = pd.read_pickle(args.labels_pkl)
     fps = float(args.fps)
-    if args.modality.lower() == 'rgb':
+    if args.modality.lower() == "rgb":
         frame_dirs = [args.frame_dir]
         links_dirs = [args.links_dir]
         modality = RGBModality(fps=fps)  # type: Modality
-    elif args.modality.lower() == 'flow':
-        axes = ['u', 'v']
+    elif args.modality.lower() == "flow":
+        axes = ["u", "v"]
         frame_dirs = [args.frame_dir.joinpath(axis) for axis in axes]
         links_dirs = [args.links_dir.joinpath(axis) for axis in axes]
-        modality = FlowModality(rgb_fps=fps, stride=int(args.of_stride), dilation=int(args.of_dilation))
+        modality = FlowModality(
+            rgb_fps=fps, stride=int(args.of_stride), dilation=int(args.of_dilation)
+        )
     else:
-        print('Modality \'{}\' is not recognised'.format(args.modality))
+        print("Modality '{}' is not recognised".format(args.modality))
         sys.exit(1)
 
     video_annotations = annotations[annotations[VIDEO_ID_COL] == args.video]
     for frame_dir, links_dir in zip(frame_dirs, links_dirs):
         common_root = os.path.commonpath([frame_dir, links_dir])
         print(common_root)
-        split_video_frames(modality, args.frame_format, video_annotations, links_dir, frame_dir)
+        split_video_frames(
+            modality, args.frame_format, video_annotations, links_dir, frame_dir
+        )
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=HELP,
-                                     formatter_class=argparse.RawTextHelpFormatter,
-                                     )
-    parser.add_argument('video', type=str,
-                        help='Video ID to segment')
-    parser.add_argument('frame_dir', type=lambda p: pathlib.Path(p).absolute(),
-                        help='Path to frames, if RGB should contain images, if flow, should contain u, '
-                             'v subdirectories with images')
-    parser.add_argument('links_dir', type=lambda p: pathlib.Path(p).absolute(),
-                        help='Path to save segments into')
-    parser.add_argument('labels_pkl', type=pathlib.Path,
-                        help='Path to the pickle file which contains the meta information about the dataset.')
-    parser.add_argument('modality', type=str.lower, default='rgb', choices=['rgb', 'flow'],
-                        help='Modality of frames that are being segmented')
-    parser.add_argument('--frame-format', type=str, default='frame_%010d.jpg',
-                        help='Pattern of frame filenames (default: %(default)s)')
-    parser.add_argument('--fps', type=float, default=60,
-                        help='FPS of extracted frames (default: %(default)s)')
-    parser.add_argument('--of-stride', type=int, default=2,
-                        help='Optical flow stride parameter used for frame extraction (default: %(default)s)')
-    parser.add_argument('--of-dilation', type=int, default=3,
-                        help='Optical flow dilation parameter used for frame extraction '
-                             '(default: %(default)s)')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description=HELP, formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument("video", type=str, help="Video ID to segment")
+    parser.add_argument(
+        "frame_dir",
+        type=lambda p: pathlib.Path(p).absolute(),
+        help="Path to frames, if RGB should contain images, if flow, should contain u, "
+        "v subdirectories with images",
+    )
+    parser.add_argument(
+        "links_dir",
+        type=lambda p: pathlib.Path(p).absolute(),
+        help="Path to save segments into",
+    )
+    parser.add_argument(
+        "labels_pkl",
+        type=pathlib.Path,
+        help="Path to the pickle file which contains the meta information about the dataset.",
+    )
+    parser.add_argument(
+        "modality",
+        type=str.lower,
+        default="rgb",
+        choices=["rgb", "flow"],
+        help="Modality of frames that are being segmented",
+    )
+    parser.add_argument(
+        "--frame-format",
+        type=str,
+        default="frame_%010d.jpg",
+        help="Pattern of frame filenames (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--fps",
+        type=float,
+        default=60,
+        help="FPS of extracted frames (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--of-stride",
+        type=int,
+        default=2,
+        help="Optical flow stride parameter used for frame extraction (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--of-dilation",
+        type=int,
+        default=3,
+        help="Optical flow dilation parameter used for frame extraction "
+        "(default: %(default)s)",
+    )
     main(parser.parse_args())

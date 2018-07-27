@@ -8,6 +8,7 @@ class VideoSegment(ABC):
     """
     Represents a video segment with an associated label.
     """
+
     @property
     def id(self):
         raise NotImplementedError()
@@ -30,6 +31,7 @@ class VideoDataset(ABC):
     the number of frames per video, which we can't do with the standard
     torch.utils.data.Dataset.
     """
+
     def __init__(self, class_count):
         self.class_count = class_count
 
@@ -40,6 +42,7 @@ class VideoDataset(ABC):
     def __len__(self):
         raise NotImplementedError()
 
-    def load_frames(self, segment: VideoSegment, idx: List[int]) -> List[PIL.Image.Image]:
+    def load_frames(
+        self, segment: VideoSegment, idx: List[int]
+    ) -> List[PIL.Image.Image]:
         raise NotImplementedError()
-

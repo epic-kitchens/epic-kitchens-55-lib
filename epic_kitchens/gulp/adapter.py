@@ -6,8 +6,14 @@ import pandas as pd
 from gulpio.adapters import AbstractDatasetAdapter
 from gulpio.utils import find_images_in_folder, resize_images
 
-from epic_kitchens.labels import VERB_CLASS_COL, VERB_COL, VIDEO_ID_COL, UID_COL, NARRATION_COL, \
-    PARTICIPANT_ID_COL
+from epic_kitchens.labels import (
+    VERB_CLASS_COL,
+    VERB_COL,
+    VIDEO_ID_COL,
+    UID_COL,
+    NARRATION_COL,
+    PARTICIPANT_ID_COL,
+)
 
 Result = Dict[str, Any]
 
@@ -16,8 +22,13 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
     """Gulp Dataset Adapter for Gulping RGB frames extracted from the EPIC-KITCHENS dataset
     """
 
-    def __init__(self, video_segment_dir: str, annotations_df: pd.DataFrame, frame_size=-1,
-                 extension='jpg') -> None:
+    def __init__(
+        self,
+        video_segment_dir: str,
+        annotations_df: pd.DataFrame,
+        frame_size=-1,
+        extension="jpg",
+    ) -> None:
         """ Gulp all action segments in  ``annotations_df`` reading the dumped frames from
         ``video_segment_dir``
 
@@ -52,10 +63,14 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
     def _transform_annotations(annotations: pd.DataFrame) -> List[Dict]:
         data = []
         for i, row in annotations.iterrows():
-            assert not pd.isnull(row[VERB_CLASS_COL]), "Row at index has no verb cluster".format(i)
-            assert not len(row[VERB_COL]) == 0, "Row at index {} has empty verb".format(i)
+            assert not pd.isnull(
+                row[VERB_CLASS_COL]
+            ), "Row at index has no verb cluster".format(i)
+            assert not len(row[VERB_COL]) == 0, "Row at index {} has empty verb".format(
+                i
+            )
             metadata = row.to_dict()
-            metadata['uid'] = i
+            metadata["uid"] = i
             data.append(metadata)
         return data
 
@@ -76,21 +91,22 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
         slice_element = slice_element or slice(0, len(self))
         for meta in self.meta_data[slice_element]:
             clip_id = "{video_id}_{uid}_{narration}".format(
-                    video_id=meta[VIDEO_ID_COL],
-                    uid=meta[UID_COL],
-                    narration=meta[NARRATION_COL].lower().strip().replace(' ', '-'))
-            folder = os.path.join(self.video_segment_dir,
-                                  meta[PARTICIPANT_ID_COL],
-                                  meta[VIDEO_ID_COL],
-                                  clip_id)
-            frame_paths = find_images_in_folder(folder, formats=['jpg', 'jpeg'])
+                video_id=meta[VIDEO_ID_COL],
+                uid=meta[UID_COL],
+                narration=meta[NARRATION_COL].lower().strip().replace(" ", "-"),
+            )
+            folder = os.path.join(
+                self.video_segment_dir,
+                meta[PARTICIPANT_ID_COL],
+                meta[VIDEO_ID_COL],
+                clip_id,
+            )
+            frame_paths = find_images_in_folder(folder, formats=["jpg", "jpeg"])
             frames = list(resize_images(frame_paths, self.frame_size))
             if len(frames) > 0:
-                meta['frame_size'] = frames[0].shape
-                meta['num_frames'] = len(frames)
-                result = {'meta': meta,
-                          'frames': frames,
-                          'id': meta[UID_COL]}
+                meta["frame_size"] = frames[0].shape
+                meta["num_frames"] = len(frames)
+                result = {"meta": meta, "frames": frames, "id": meta[UID_COL]}
                 yield result
             else:
                 raise MissingDataException("{} is not present".format(folder))
@@ -107,27 +123,36 @@ class EpicFlowDatasetAdapter(EpicDatasetAdapter):
         slice_element = slice_element or slice(0, len(self))
         for meta in self.meta_data[slice_element]:
             clip_id = "{video_id}_{uid}_{narration}".format(
-                    video_id=meta[VIDEO_ID_COL],
-                    uid=meta[UID_COL],
-                    narration=meta[NARRATION_COL].lower().strip().replace(' ', '-'))
+                video_id=meta[VIDEO_ID_COL],
+                uid=meta[UID_COL],
+                narration=meta[NARRATION_COL].lower().strip().replace(" ", "-"),
+            )
             folder = {}
             paths = {}
             frames = {}
-            for axis in 'u', 'v':
-                folder[axis] = os.path.join(self.video_segment_dir, meta[PARTICIPANT_ID_COL],
-                                            meta[VIDEO_ID_COL],
-                                            axis, clip_id)
-                paths[axis] = glob.glob(folder[axis] + os.path.sep + '*.' + self.extension, recursive=True)
+            for axis in "u", "v":
+                folder[axis] = os.path.join(
+                    self.video_segment_dir,
+                    meta[PARTICIPANT_ID_COL],
+                    meta[VIDEO_ID_COL],
+                    axis,
+                    clip_id,
+                )
+                paths[axis] = glob.glob(
+                    folder[axis] + os.path.sep + "*." + self.extension, recursive=True
+                )
                 frames[axis] = list(resize_images(paths[axis], self.frame_size))
-            if len(frames['u']) > 0:
-                meta['frame_size'] = frames['u'][0].shape
-                meta['num_frames'] = len(frames['u'])
-                result = {'meta': meta,
-                          'frames': list(_intersperse(frames['u'], frames['v'])),
-                          'id': meta[UID_COL]}
+            if len(frames["u"]) > 0:
+                meta["frame_size"] = frames["u"][0].shape
+                meta["num_frames"] = len(frames["u"])
+                result = {
+                    "meta": meta,
+                    "frames": list(_intersperse(frames["u"], frames["v"])),
+                    "id": meta[UID_COL],
+                }
                 yield result
             else:
-                raise MissingDataException("{} is not present".format(folder['u']))
+                raise MissingDataException("{} is not present".format(folder["u"]))
 
     def __len__(self):
         return len(self.meta_data)
