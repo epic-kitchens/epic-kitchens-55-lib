@@ -5,5 +5,5 @@ gulpio==531.53
 numpy==1.15.0
 pandas==0.23.3
 typing==3.6.4
-pytest==3.5.1
+pytest==3.6.3
 pytest-cov==2.5.1
