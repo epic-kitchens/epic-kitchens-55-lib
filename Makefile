@@ -1,4 +1,4 @@
-.PHONY: all docs test compile upload_to_pypi typecheck clean
+.PHONY: all docs test compile upload_to_pypi typecheck clean format
 
 LIBRARY_DIR := epic_kitchens
 SRC_FILES := $(shell find epic_kitchens) 
@@ -13,7 +13,13 @@ test: compile
 	tox
 
 compile:
-	python -m compileall $(LIBRARY_DIR)
+	python -m compileall $(LIBRARY_DIR) -j $$(nproc)
+
+format:
+	black epic_kitchens
+
+flake8:
+	flake8 epic_kitchens
 
 dist: $(SRC_FILES) compile
 	rm -rf dist
