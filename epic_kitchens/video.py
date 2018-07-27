@@ -124,7 +124,7 @@ def _split_frames_by_segment(frame_format: str, frame_iterator, segment_dir: Pat
             assert source_frame_path.exists(), "{source_frame_path} does not exist".format(
                 source_frame_path=source_frame_path
             )
-            if os.path.lexists(segmented_frame_path):
+            if os.path.lexists(str(segmented_frame_path)):
                 os.remove(str(segmented_frame_path))
             source_frame_relative_path = os.path.relpath(str(source_frame_path), start=str(segment_dir))
             os.symlink(str(source_frame_relative_path), str(segmented_frame_path), dir_fd=segment_dir_fd)
