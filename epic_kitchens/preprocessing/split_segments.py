@@ -70,7 +70,7 @@ def main(args):
 
     video_annotations = annotations[annotations[VIDEO_ID_COL] == args.video]
     for frame_dir, links_dir in zip(frame_dirs, links_dirs):
-        common_root = os.path.commonpath([frame_dir, links_dir])
+        common_root = os.path.commonpath([str(frame_dir), str(links_dir)])
         print(common_root)
         split_video_frames(modality, args.frame_format, video_annotations, links_dir, frame_dir)
 
