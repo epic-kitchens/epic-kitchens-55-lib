@@ -30,7 +30,7 @@ shared: &shared
 
       - restore_cache:
           keys:
-            - system-test-dataset-{{ checksum "tests/system_test_dataset.zip" }}
+            - system-test-dataset-{{ checksum "tests/system_test_dataset.etag" }}
 
       - run:
           name: Download system test dataset
@@ -48,7 +48,7 @@ shared: &shared
             codecov
 
       - save_cache:
-          key: system-test-dataset-{{ checksum "tests/system_test_dataset.zip" }}
+          key: system-test-dataset-{{ checksum "tests/system_test_dataset.etag" }}
           paths:
             - "tests/dataset"
 

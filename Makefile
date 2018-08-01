@@ -5,6 +5,7 @@ LIBRARY_DIR := epic_kitchens
 SRC_FILES := $(shell find epic_kitchens) 
 SRC_FILES += setup.py
 SYSTEM_TEST_DATASET_URL := "https://s3-eu-west-1.amazonaws.com/wp-research-public/epic/system_test_dataset.zip"
+SYSTEM_TEST_DATASET_ETAG := $(shell cat tests/system_test_dataset.etag) 
 
 all: test
 
@@ -19,8 +20,13 @@ tests/dataset: tests/system_test_dataset.zip
 	unzip  -o "$<" -d "$@"
 	touch "$@" # Update creation time of folder to prevent rule from rerunning
 
-tests/system_test_dataset.zip:
-	wget "$(SYSTEM_TEST_DATASET_URL)" -O "$@"
+tests/system_test_dataset.zip: tests/system_test_dataset.etag
+	if [ -f "$@" ]; then\
+		curl "$(SYSTEM_TEST_DATASET_URL)" -o "$@" --header "If-None-Match: $(SYSTEM_TEST_DATASET_ETAG)";\
+	else\
+		curl "$(SYSTEM_TEST_DATASET_URL)" -o "$@";\
+	fi
+
 
 compile:
 	python -m compileall $(LIBRARY_DIR) -j $$(nproc)
