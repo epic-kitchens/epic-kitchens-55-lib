@@ -15,7 +15,7 @@ def test_gulping_labelled_rgb_segments(tmpdir):
     annotations_path = ANNOTATIONS_DIR / 'EPIC_train_action_labels.csv'
 
     gulp(segment_dir, gulp_dir_path, annotations_path, 'rgb', True)
-    gulp_dir = GulpDirectory(gulp_dir_path)
+    gulp_dir = GulpDirectory(str(gulp_dir_path))
 
     assert_number_of_segments(gulp_dir, 11)
     annotations = pd.read_csv(annotations_path, index_col='uid')
@@ -31,7 +31,7 @@ def test_gulping_unlabelled_rgb_segments(tmpdir):
     annotations_path = ANNOTATIONS_DIR / 'EPIC_test_s1_timestamps.csv'
 
     gulp(segment_dir, gulp_dir_path, annotations_path, 'rgb', False)
-    gulp_dir = GulpDirectory(gulp_dir_path)
+    gulp_dir = GulpDirectory(str(gulp_dir_path))
 
     assert_number_of_segments(gulp_dir, 7)
     annotations = pd.read_csv(annotations_path, index_col='uid')
@@ -46,7 +46,7 @@ def test_gulping_labelled_flow_segments(tmpdir):
     annotations_path = ANNOTATIONS_DIR / 'EPIC_train_action_labels.csv'
 
     gulp(segment_dir, gulp_dir_path, annotations_path, 'flow', True)
-    gulp_dir = GulpDirectory(gulp_dir_path)
+    gulp_dir = GulpDirectory(str(gulp_dir_path))
 
     assert_number_of_segments(gulp_dir, 11)
     annotations = pd.read_csv(annotations_path, index_col='uid')
@@ -62,7 +62,7 @@ def test_gulping_unlabelled_flow_segments(tmpdir):
     annotations_path = ANNOTATIONS_DIR / 'EPIC_test_s1_timestamps.csv'
 
     gulp(segment_dir, gulp_dir_path, annotations_path, 'flow', False)
-    gulp_dir = GulpDirectory(gulp_dir_path)
+    gulp_dir = GulpDirectory(str(gulp_dir_path))
 
     assert_number_of_segments(gulp_dir, 7)
     annotations = pd.read_csv(annotations_path, index_col='uid')
