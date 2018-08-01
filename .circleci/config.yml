@@ -28,6 +28,10 @@ shared: &shared
           paths:
             - "venv"
 
+      - restore_cache:
+          keys:
+            - system-test-dataset-{{ checksum "tests/system_test_dataset.zip" }}
+
       - run:
           name: Run tests
           command: |
@@ -38,6 +42,12 @@ shared: &shared
             TOX_ENV="$(echo ${PYTHON_VERSION} | sed -E 's/([[:digit:]]).([[:digit:]]).([[:digit:]])/py\1\2/')"
             tox -e "$TOX_ENV"
             codecov
+
+      - save_cache:
+          key: system-test-dataset-{{ checksum "tests/system_test_dataset.zip" }}
+          paths:
+            - "tests/dataset"
+
 
 jobs:
   py3.5:
