@@ -91,7 +91,7 @@ def get_frame_dir(modality, participant_id, video_id):
 
 
 def get_segment_dir(tmpdir, participant_id, video_id):
-    segments_dir = Path(tmpdir.mkdir('segments'))
+    segments_dir = Path(str(tmpdir.mkdir('segments')))
     video_segments_dir = segments_dir / participant_id / video_id
     video_segments_dir.mkdir(parents=True, exist_ok=False)
     return video_segments_dir
