@@ -33,6 +33,10 @@ shared: &shared
             - system-test-dataset-{{ checksum "tests/system_test_dataset.zip" }}
 
       - run:
+          name: Download system test dataset
+          command: make tests/dataset
+
+      - run:
           name: Run tests
           command: |
             . venv/bin/activate
