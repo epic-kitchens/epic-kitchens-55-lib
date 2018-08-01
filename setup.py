@@ -25,7 +25,6 @@ setup(
             'gulpio>=500',
             'pandas',
             'numpy',
-            'pillow-simd',
         ],
         extras_require={
             'dev': ['Sphinx', 'pygments', 'sphinx_rtd_theme', 'pytest', 'mypy']

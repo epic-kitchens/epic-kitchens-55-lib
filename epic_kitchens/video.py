@@ -102,6 +102,13 @@ def split_dataset_frames(
             )
 
 
+def get_narration(annotation):
+    try:
+        return getattr(annotation, NARRATION_COL)
+    except AttributeError:
+        return "unnarrated"
+
+
 def split_video_frames(
     modality: Modality,
     frame_format: str,
@@ -113,7 +120,7 @@ def split_video_frames(
         segment_dir_name = "{video_id}_{index}_{narration}".format(
             index=annotation.Index,
             video_id=getattr(annotation, VIDEO_ID_COL),
-            narration=getattr(annotation, NARRATION_COL)
+            narration=get_narration(annotation)
             .strip()
             .lower()
             .replace(" ", "-"),
@@ -127,7 +134,7 @@ def split_video_frames(
         LOG.info(
             "Linking {video_id} - {narration} - {start}--{stop}".format(
                 video_id=getattr(annotation, VIDEO_ID_COL),
-                narration=getattr(annotation, NARRATION_COL),
+                narration=get_narration(annotation),
                 start=start_timestamp,
                 stop=stop_timestamp,
             )

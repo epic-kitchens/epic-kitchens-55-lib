@@ -1,16 +1,26 @@
 .PHONY: all docs test compile upload_to_pypi typecheck clean format
 
+
 LIBRARY_DIR := epic_kitchens
 SRC_FILES := $(shell find epic_kitchens) 
 SRC_FILES += setup.py
+SYSTEM_TEST_DATASET_URL := "https://s3-eu-west-1.amazonaws.com/wp-research-public/epic/system_test_dataset.zip"
 
 all: test
 
 docs:
 	$(MAKE) html -C docs 
 
-test: compile
+test: compile tests/dataset
 	tox
+
+tests/dataset: tests/system_test_dataset.zip
+	mkdir -p "$@"
+	unzip  -o "$<" -d "$@"
+	touch "$@" # Update creation time of folder to prevent rule from rerunning
+
+tests/system_test_dataset.zip:
+	wget "$(SYSTEM_TEST_DATASET_URL)" -O "$@"
 
 compile:
 	python -m compileall $(LIBRARY_DIR) -j $$(nproc)

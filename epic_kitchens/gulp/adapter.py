@@ -28,6 +28,7 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
         annotations_df: pd.DataFrame,
         frame_size=-1,
         extension="jpg",
+        labelled=True
     ) -> None:
         """ Gulp all action segments in  ``annotations_df`` reading the dumped frames from
         ``video_segment_dir``
@@ -56,20 +57,22 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
         """
         self.video_segment_dir = video_segment_dir
         self.frame_size = int(frame_size)
-        self.meta_data = self._transform_annotations(annotations_df)
+        self.meta_data = self._transform_annotations(annotations_df, labelled)
         self.extension = extension
 
-    @staticmethod
-    def _transform_annotations(annotations: pd.DataFrame) -> List[Dict]:
+    def _transform_annotations(self, annotations: pd.DataFrame, labelled: bool) -> List[Dict]:
         data = []
         for i, row in annotations.iterrows():
-            assert not pd.isnull(
-                row[VERB_CLASS_COL]
-            ), "Row at index has no verb cluster".format(i)
-            assert not len(row[VERB_COL]) == 0, "Row at index {} has empty verb".format(
-                i
-            )
+            if labelled:
+                assert not pd.isnull(
+                    row[VERB_CLASS_COL]
+                ), "Row at index has no verb cluster".format(i)
+                assert not len(row[VERB_COL]) == 0, "Row at index {} has empty verb".format(
+                    i
+                )
             metadata = row.to_dict()
+            if NARRATION_COL not in metadata:
+                metadata[NARRATION_COL] = "unnarrated"
             metadata["uid"] = i
             data.append(metadata)
         return data
