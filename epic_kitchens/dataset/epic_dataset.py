@@ -1,6 +1,6 @@
 import copy
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 import PIL.Image
 from gulpio import GulpDirectory
@@ -90,11 +90,37 @@ class GulpVideoSegment(VideoSegment):
 class EpicVideoDataset(VideoDataset):
 
     def __init__(
-        self, gulp_path: Path, class_type: str, class_getter=None, with_metadata=False
+            self, gulp_path: Path, class_type: str,
+            *,
+            with_metadata: bool = False,
+            class_getter: Optional[Callable[[Dict[str, Any], Any], int]] = None,
+            segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
     ) -> None:
+        """
+
+        Parameters
+        ----------
+        gulp_path
+            Path to gulp directory containing the gulped EPIC RGB or flow frames
+        class_type
+            One of verb, noun, verb+noun, determines what label the segment returns
+        class_getter
+            Optionally provide a callable that takes in the gulp dict representing the segment from which
+            you should return the class you wish the segment to have
+        with_metadata
+            When True the segments will yield a tuple (metadata, class) where the class is defined by the
+            class getter and the metadata is the raw dictionary stored in the gulp file.
+        segment_filter
+            Optionally provide a callable that takes a segment and returns True if you want to keep the
+            segment in the dataset, or False if you wish to exclude it.
+        """
         super().__init__(_class_count[class_type])
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
+        if segment_filter is None:
+            self.segment_filter = lambda _: True
+        else:
+            self.segment_filter = segment_filter
         if class_getter is None:
             class_getter = _class_getter[class_type]
         if with_metadata:
@@ -126,10 +152,12 @@ class EpicVideoDataset(VideoDataset):
     def _read_video_records(
         self, gulp_dir_meta_dict, class_getter: Callable[[Dict[str, Any]], Any]
     ) -> List[VideoSegment]:
-        return [
-            GulpVideoSegment(gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter)
-            for video_id in gulp_dir_meta_dict
-        ]
+        segments = []
+        for video_id in gulp_dir_meta_dict:
+            segment = GulpVideoSegment(gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter)
+            if self.segment_filter(segment):
+                segments.append(segment)
+        return segments
 
     def _sample_video_at_index(
         self, record: VideoSegment, index: int
