@@ -1,3 +1,17 @@
+# Version 1.3.0
+
+## Features
+
+* Both `epic_kitchens.preprocessing.split_segments` and 
+  `epic_kitchens.gulp` now support reading CSV labels as well as a pickled
+  labels.
+* Support un-narrated action segment splitting in
+  `epic_kitchens.preprocessing.split_segments` to enable splitting using the
+  test timestamp CSVs.
+* Add `--unlabelled` option to `epic_kitchens.gulp` to enable gulping of test
+  set that doesn't have label data.
+
+
 # Version 1.2.1
 
 ## Bug fix
