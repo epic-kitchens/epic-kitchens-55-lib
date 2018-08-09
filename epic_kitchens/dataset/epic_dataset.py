@@ -120,14 +120,12 @@ class EpicVideoDataset(VideoDataset):
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
         if class_getter is None:
-            _class_getter = _class_getters[class_type]
-        else:
-            _class_getter = class_getter
+            class_getter = _class_getters[class_type]
         if with_metadata:
-            original_getter = copy.copy(_class_getter)
-            _class_getter = lambda metadata: (metadata, original_getter(metadata))
+            original_getter = copy.copy(class_getter)
+            class_getter = lambda metadata: (metadata, original_getter(metadata))
         self._video_list = self._read_segments(
-            self.gulp_dir.merged_meta_dict, _class_getter
+            self.gulp_dir.merged_meta_dict, class_getter
         )
 
     @property
