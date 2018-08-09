@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List
+from typing import List, Optional, Callable
 
 import PIL.Image
 
@@ -32,8 +32,16 @@ class VideoDataset(ABC):
     torch.utils.data.Dataset.
     """
 
-    def __init__(self, class_count):
+    def __init__(
+        self,
+        class_count,
+        segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
+    ) -> None:
         self.class_count = class_count
+        if segment_filter is None:
+            self.segment_filter = lambda _: True
+        else:
+            self.segment_filter = segment_filter
 
     @property
     def video_segments(self) -> List[VideoSegment]:

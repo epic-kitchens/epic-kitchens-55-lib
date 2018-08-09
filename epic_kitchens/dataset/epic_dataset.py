@@ -17,7 +17,7 @@ def _noun_class_getter(metadata):
     return int(metadata[NOUN_CLASS_COL])
 
 
-_class_getter = {
+_class_getters = {
     "verb": _verb_class_getter,
     "noun": _noun_class_getter,
     "verb+noun": lambda metadata: {
@@ -90,11 +90,13 @@ class GulpVideoSegment(VideoSegment):
 class EpicVideoDataset(VideoDataset):
 
     def __init__(
-            self, gulp_path: Path, class_type: str,
-            *,
-            with_metadata: bool = False,
-            class_getter: Optional[Callable[[Dict[str, Any], Any], int]] = None,
-            segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
+        self,
+        gulp_path: Path,
+        class_type: str,
+        *,
+        with_metadata: bool = False,
+        class_getter: Optional[Callable[[Dict[str, Any]], Any]] = None,
+        segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
     ) -> None:
         """
 
@@ -114,20 +116,18 @@ class EpicVideoDataset(VideoDataset):
             Optionally provide a callable that takes a segment and returns True if you want to keep the
             segment in the dataset, or False if you wish to exclude it.
         """
-        super().__init__(_class_count[class_type])
+        super().__init__(_class_count[class_type], segment_filter=segment_filter)
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
-        if segment_filter is None:
-            self.segment_filter = lambda _: True
-        else:
-            self.segment_filter = segment_filter
         if class_getter is None:
-            class_getter = _class_getter[class_type]
+            _class_getter = _class_getters[class_type]
+        else:
+            _class_getter = class_getter
         if with_metadata:
-            original_getter = copy.copy(class_getter)
-            class_getter = lambda metadata: (metadata, original_getter(metadata))
-        self._video_list = self._read_video_records(
-            self.gulp_dir.merged_meta_dict, class_getter
+            original_getter = copy.copy(_class_getter)
+            _class_getter = lambda metadata: (metadata, original_getter(metadata))
+        self._video_list = self._read_segments(
+            self.gulp_dir.merged_meta_dict, _class_getter
         )
 
     @property
@@ -149,12 +149,14 @@ class EpicVideoDataset(VideoDataset):
     def __len__(self):
         return len(self.video_segments)
 
-    def _read_video_records(
+    def _read_segments(
         self, gulp_dir_meta_dict, class_getter: Callable[[Dict[str, Any]], Any]
     ) -> List[VideoSegment]:
-        segments = []
+        segments = []  # type: List[VideoSegment]
         for video_id in gulp_dir_meta_dict:
-            segment = GulpVideoSegment(gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter)
+            segment = GulpVideoSegment(
+                gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter
+            )
             if self.segment_filter(segment):
                 segments.append(segment)
         return segments
