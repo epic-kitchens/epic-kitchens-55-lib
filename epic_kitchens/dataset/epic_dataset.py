@@ -96,7 +96,7 @@ class EpicVideoDataset(VideoDataset):
         *,
         with_metadata: bool = False,
         class_getter: Optional[Callable[[Dict[str, Any]], Any]] = None,
-        segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
+        segment_filter: Optional[Callable[[VideoSegment], bool]] = None
     ) -> None:
         """
 
