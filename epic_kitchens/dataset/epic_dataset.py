@@ -96,7 +96,8 @@ class EpicVideoDataset(VideoDataset):
         *,
         with_metadata: bool = False,
         class_getter: Optional[Callable[[Dict[str, Any]], Any]] = None,
-        segment_filter: Optional[Callable[[VideoSegment], bool]] = None
+        segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
+        sample_transform: Optional[Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]] = None
     ) -> None:
         """
 
@@ -115,8 +116,11 @@ class EpicVideoDataset(VideoDataset):
         segment_filter
             Optionally provide a callable that takes a segment and returns True if you want to keep the
             segment in the dataset, or False if you wish to exclude it.
+        sample_filter
+            Optionally provide a sample transform function which takes a list of PIL images and transforms
+            each of them. This is applied on the list of frames upon loading the dataset.
         """
-        super().__init__(_class_count[class_type], segment_filter=segment_filter)
+        super().__init__(_class_count[class_type], segment_filter=segment_filter, sample_transform=sample_transform)
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
         if class_getter is None:
@@ -140,7 +144,9 @@ class EpicVideoDataset(VideoDataset):
             # Without passing a slice to the gulp directory index we load ALL the frames
             # so we create a slice with a single element -- that way we only read a single frame
             # from the gulp chunk, and not the whole chunk.
+            # Here we also apply the sample transform to the loaded frames
             frames = self._sample_video_at_index(segment, i)
+            frames = self.sample_transform(frames)
             selected_frames.extend(frames)
         return selected_frames
 
