@@ -1,6 +1,6 @@
 import copy
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 import PIL.Image
 from gulpio import GulpDirectory
@@ -17,7 +17,7 @@ def _noun_class_getter(metadata):
     return int(metadata[NOUN_CLASS_COL])
 
 
-_class_getter = {
+_class_getters = {
     "verb": _verb_class_getter,
     "noun": _noun_class_getter,
     "verb+noun": lambda metadata: {
@@ -90,17 +90,45 @@ class GulpVideoSegment(VideoSegment):
 class EpicVideoDataset(VideoDataset):
 
     def __init__(
-        self, gulp_path: Path, class_type: str, class_getter=None, with_metadata=False
+        self,
+        gulp_path: Path,
+        class_type: str,
+        *,
+        with_metadata: bool = False,
+        class_getter: Optional[Callable[[Dict[str, Any]], Any]] = None,
+        segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
+        sample_transform: Optional[Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]] = None
     ) -> None:
-        super().__init__(_class_count[class_type])
+        """
+
+        Parameters
+        ----------
+        gulp_path
+            Path to gulp directory containing the gulped EPIC RGB or flow frames
+        class_type
+            One of verb, noun, verb+noun, determines what label the segment returns
+        with_metadata
+            When True the segments will yield a tuple (metadata, class) where the class is defined by the
+            class getter and the metadata is the raw dictionary stored in the gulp file.
+        class_getter
+            Optionally provide a callable that takes in the gulp dict representing the segment from which
+            you should return the class you wish the segment to have
+        segment_filter
+            Optionally provide a callable that takes a segment and returns True if you want to keep the
+            segment in the dataset, or False if you wish to exclude it
+        sample_transform
+            Optionally provide a sample transform function which takes a list of PIL images and transforms
+            each of them. This is applied on the frames just before returning from load_frames
+        """
+        super().__init__(_class_count[class_type], segment_filter=segment_filter, sample_transform=sample_transform)
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
         if class_getter is None:
-            class_getter = _class_getter[class_type]
+            class_getter = _class_getters[class_type]
         if with_metadata:
             original_getter = copy.copy(class_getter)
             class_getter = lambda metadata: (metadata, original_getter(metadata))
-        self._video_list = self._read_video_records(
+        self._video_list = self._read_segments(
             self.gulp_dir.merged_meta_dict, class_getter
         )
 
@@ -116,20 +144,26 @@ class EpicVideoDataset(VideoDataset):
             # Without passing a slice to the gulp directory index we load ALL the frames
             # so we create a slice with a single element -- that way we only read a single frame
             # from the gulp chunk, and not the whole chunk.
+            # Here we also apply the sample transform to the loaded frames
             frames = self._sample_video_at_index(segment, i)
+            frames = self.sample_transform(frames)
             selected_frames.extend(frames)
         return selected_frames
 
     def __len__(self):
         return len(self.video_segments)
 
-    def _read_video_records(
+    def _read_segments(
         self, gulp_dir_meta_dict, class_getter: Callable[[Dict[str, Any]], Any]
     ) -> List[VideoSegment]:
-        return [
-            GulpVideoSegment(gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter)
-            for video_id in gulp_dir_meta_dict
-        ]
+        segments = []  # type: List[VideoSegment]
+        for video_id in gulp_dir_meta_dict:
+            segment = GulpVideoSegment(
+                gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter
+            )
+            if self.segment_filter(segment):
+                segments.append(segment)
+        return segments
 
     def _sample_video_at_index(
         self, record: VideoSegment, index: int
