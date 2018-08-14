@@ -107,18 +107,18 @@ class EpicVideoDataset(VideoDataset):
             Path to gulp directory containing the gulped EPIC RGB or flow frames
         class_type
             One of verb, noun, verb+noun, determines what label the segment returns
-        class_getter
-            Optionally provide a callable that takes in the gulp dict representing the segment from which
-            you should return the class you wish the segment to have
         with_metadata
             When True the segments will yield a tuple (metadata, class) where the class is defined by the
             class getter and the metadata is the raw dictionary stored in the gulp file.
+        class_getter
+            Optionally provide a callable that takes in the gulp dict representing the segment from which
+            you should return the class you wish the segment to have
         segment_filter
             Optionally provide a callable that takes a segment and returns True if you want to keep the
-            segment in the dataset, or False if you wish to exclude it.
-        sample_filter
+            segment in the dataset, or False if you wish to exclude it
+        sample_transform
             Optionally provide a sample transform function which takes a list of PIL images and transforms
-            each of them. This is applied on the list of frames upon loading the dataset.
+            each of them. This is applied on the frames just before returning from load_frames
         """
         super().__init__(_class_count[class_type], segment_filter=segment_filter, sample_transform=sample_transform)
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
