@@ -1,8 +1,21 @@
+# Version 1.4.0
+
+## Features
+
+* Add `sample_transform` kwarg to `VideoDataset`, this allows you to
+  transform each frame or optical flow stack by providing a function that takes
+  in a list of PIL images and produces a list of PIL images
+* Add `segment_filter` kwarg to `VideoDataset`, this allows you to selectively
+  filter action segments from a video by providing a function that takes a
+  `VideoSegment` and makes a decision on whether to include the segment in the
+  dataset or not, thus allowing you to filter to include or exclude specific
+  classes etc.
+
 # Version 1.3.0
 
 ## Features
 
-* Both `epic_kitchens.preprocessing.split_segments` and 
+* Both `epic_kitchens.preprocessing.split_segments` and
   `epic_kitchens.gulp` now support reading CSV labels as well as a pickled
   labels.
 * Support un-narrated action segment splitting in
