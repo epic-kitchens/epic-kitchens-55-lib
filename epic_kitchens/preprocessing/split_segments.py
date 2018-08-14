@@ -45,56 +45,56 @@ LOG = logging.getLogger(__name__)
 
 
 parser = argparse.ArgumentParser(
-        description=HELP, formatter_class=argparse.RawTextHelpFormatter
+    description=HELP, formatter_class=argparse.RawTextHelpFormatter
 )
 parser.add_argument("video", type=str, help="Video ID to segment")
 parser.add_argument(
-        "frame_dir",
-        type=lambda p: pathlib.Path(p).absolute(),
-        help="Path to frames, if RGB should contain images, if flow, should contain u, "
-             "v subdirectories with images",
+    "frame_dir",
+    type=lambda p: pathlib.Path(p).absolute(),
+    help="Path to frames, if RGB should contain images, if flow, should contain u, "
+    "v subdirectories with images",
 )
 parser.add_argument(
-        "links_dir",
-        type=lambda p: pathlib.Path(p).absolute(),
-        help="Path to save segments into",
+    "links_dir",
+    type=lambda p: pathlib.Path(p).absolute(),
+    help="Path to save segments into",
 )
 parser.add_argument(
-        "labels",
-        type=pathlib.Path,
-        help="Path to the pickle or CSV file which contains the meta information about the dataset.",
+    "labels",
+    type=pathlib.Path,
+    help="Path to the pickle or CSV file which contains the meta information about the dataset.",
 )
 parser.add_argument(
-        "modality",
-        type=str.lower,
-        default="rgb",
-        choices=["rgb", "flow"],
-        help="Modality of frames that are being segmented",
+    "modality",
+    type=str.lower,
+    default="rgb",
+    choices=["rgb", "flow"],
+    help="Modality of frames that are being segmented",
 )
 parser.add_argument(
-        "--frame-format",
-        type=str,
-        default="frame_%010d.jpg",
-        help="Pattern of frame filenames (default: %(default)s)",
+    "--frame-format",
+    type=str,
+    default="frame_%010d.jpg",
+    help="Pattern of frame filenames (default: %(default)s)",
 )
 parser.add_argument(
-        "--fps",
-        type=float,
-        default=60,
-        help="FPS of extracted frames (default: %(default)s)",
+    "--fps",
+    type=float,
+    default=60,
+    help="FPS of extracted frames (default: %(default)s)",
 )
 parser.add_argument(
-        "--of-stride",
-        type=int,
-        default=2,
-        help="Optical flow stride parameter used for frame extraction (default: %(default)s)",
+    "--of-stride",
+    type=int,
+    default=2,
+    help="Optical flow stride parameter used for frame extraction (default: %(default)s)",
 )
 parser.add_argument(
-        "--of-dilation",
-        type=int,
-        default=3,
-        help="Optical flow dilation parameter used for frame extraction "
-             "(default: %(default)s)",
+    "--of-dilation",
+    type=int,
+    default=3,
+    help="Optical flow dilation parameter used for frame extraction "
+    "(default: %(default)s)",
 )
 
 
@@ -104,10 +104,10 @@ def main(args):
         LOG.error("Annotations pickle: '{}' does not exist".format(args.labels))
         sys.exit(1)
 
-    if args.labels.suffix.lower() == '.pkl':
+    if args.labels.suffix.lower() == ".pkl":
         annotations = pd.read_pickle(args.labels)
-    elif args.labels.suffix.lower() == '.csv':
-        annotations = pd.read_csv(args.labels, index_col='uid')
+    elif args.labels.suffix.lower() == ".csv":
+        annotations = pd.read_csv(args.labels, index_col="uid")
     else:
         raise ValueError("Expected .csv or .pkl suffix for annotation file")
 

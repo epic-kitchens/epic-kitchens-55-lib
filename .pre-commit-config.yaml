@@ -7,12 +7,10 @@ repos:
     -   id: check-ast
     -   id: check-case-conflict
     -   id: check-docstring-first
-    -   id: check-executables-have-shebangs
     -   id: check-symlinks
     -   id: debug-statements
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
-    -   id: flake8
 -   repo: https://github.com/willprice/pre-commit-hooks
     rev: v0.0.1
     hooks:

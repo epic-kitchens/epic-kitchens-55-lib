@@ -32,7 +32,6 @@ class Modality(ABC):
 
 
 class RGBModality(Modality):
-
     def __init__(self, fps):
         self.fps = fps
 
@@ -43,7 +42,6 @@ class RGBModality(Modality):
 
 
 class FlowModality(Modality):
-
     def __init__(self, dilation=1, stride=1, bound=20, rgb_fps=59.94):
         self.dilation = dilation
         self.stride = stride
@@ -120,10 +118,7 @@ def split_video_frames(
         segment_dir_name = "{video_id}_{index}_{narration}".format(
             index=annotation.Index,
             video_id=getattr(annotation, VIDEO_ID_COL),
-            narration=get_narration(annotation)
-            .strip()
-            .lower()
-            .replace(" ", "-"),
+            narration=get_narration(annotation).strip().lower().replace(" ", "-"),
         )
         segment_dir = segment_root_dir.joinpath(segment_dir_name)
         segment_dir.mkdir(parents=True, exist_ok=True)

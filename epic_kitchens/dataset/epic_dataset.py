@@ -88,7 +88,6 @@ class GulpVideoSegment(VideoSegment):
 
 
 class EpicVideoDataset(VideoDataset):
-
     def __init__(
         self,
         gulp_path: Path,
@@ -97,7 +96,9 @@ class EpicVideoDataset(VideoDataset):
         with_metadata: bool = False,
         class_getter: Optional[Callable[[Dict[str, Any]], Any]] = None,
         segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
-        sample_transform: Optional[Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]] = None
+        sample_transform: Optional[
+            Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]
+        ] = None
     ) -> None:
         """
 
@@ -120,7 +121,11 @@ class EpicVideoDataset(VideoDataset):
             Optionally provide a sample transform function which takes a list of PIL images and transforms
             each of them. This is applied on the frames just before returning from load_frames
         """
-        super().__init__(_class_count[class_type], segment_filter=segment_filter, sample_transform=sample_transform)
+        super().__init__(
+            _class_count[class_type],
+            segment_filter=segment_filter,
+            sample_transform=sample_transform,
+        )
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
         if class_getter is None:
@@ -174,7 +179,6 @@ class EpicVideoDataset(VideoDataset):
 
 
 class EpicVideoFlowDataset(EpicVideoDataset):
-
     def _sample_video_at_index(
         self, record: VideoSegment, index: int
     ) -> List[PIL.Image.Image]:

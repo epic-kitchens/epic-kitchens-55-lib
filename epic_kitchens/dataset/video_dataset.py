@@ -36,7 +36,9 @@ class VideoDataset(ABC):
         self,
         class_count,
         segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
-        sample_transform: Optional[Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]] = None
+        sample_transform: Optional[
+            Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]
+        ] = None,
     ) -> None:
         self.class_count = class_count
         if segment_filter is None:
