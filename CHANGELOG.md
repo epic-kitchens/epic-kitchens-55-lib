@@ -1,3 +1,29 @@
+
+# Version 1.5.0
+
+## Features
+
+* Add `__getitem__` method to `EpicVideoDataset` to enable segments to be
+  retrieved by ID, rather than having to obtain the `video_segments` and filter
+  by ID.
+* Make `idx` arg optional in `VideoDataset.load_frames`, by default we now load
+  all the frames for the segment, this behaviour is equivalent to
+  `VideoDataset.load_frames(segment, range(0, segment.num_frames)`
+* Support string paths to constructor of `EpicVideoDataset` and `EpicVideoFlowDataset`
+* Support test datasets in `EpicVideoDataset` and `EpicVideoFlowDataset`: Simply set
+  `class_type` as `None` and the video segment's `label` property will be `None`.
+* Bugfix: Gulped flow frames were read in a random order (due to the results of
+  `glob.glob` not being sorted lexicographically), so if you have used a version
+  prior to 1.5.0 you should discard your gulped flow, and regulp using the fixed
+  adapter - our sincere apologies for the inconvenience caused.
+
+**WARNING: People who have gulped flow**:
+If you have used any previous version of the library to gulp flow,
+then you should discard that flow and regulp the flow due to the previous
+version of the adapter reading frames in an unsorted manner resulting in
+flow segments within the gulp file being randomly shuffled.
+
+
 # Version 1.4.0
 
 ## Features

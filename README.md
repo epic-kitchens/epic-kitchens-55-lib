@@ -7,7 +7,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/epic-kitchens.svg)](https://pypi.org/project/epic-kitchens/)
 
 > A library for easily integrating the EPIC-KITCHENS egocentric dataset in your
-> experiments 
+> experiments
 
 ## Install
 
@@ -15,7 +15,15 @@
 $ pip install epic-kitchens
 ```
 
-## Features:
+## Details
 
-* [GulpIO adapter](https://github.com/TwentyBN/GulpIO#loading-data) for ingesting and reading the 
+* Segmentation scripts for splitting raw video frames/flow into action segments
+* [GulpIO adapter](https://github.com/TwentyBN/GulpIO#loading-data) for ingesting and reading the
   dataset. This works particularly well for PyTorch and Tensorflow models.
+* Dataset classes for loading and augmenting data
+* Utilities for converting between frame indices for RGB and flow.
+
+See the [CHANGELOG](CHANGELOG.md) for release notes
+
+Check out the documentation on [Read the
+docs](https://epic-kitchens.readthedocs.io/en/latest/index.html)

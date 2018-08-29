@@ -58,6 +58,6 @@ class VideoDataset(ABC):
         raise NotImplementedError()
 
     def load_frames(
-        self, segment: VideoSegment, idx: List[int]
+        self, segment: VideoSegment, idx: Optional[List[int]] = None
     ) -> List[PIL.Image.Image]:
         raise NotImplementedError()

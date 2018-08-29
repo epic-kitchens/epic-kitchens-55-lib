@@ -58,7 +58,40 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
         self.video_segment_dir = video_segment_dir
         self.frame_size = int(frame_size)
         self.meta_data = self._transform_annotations(annotations_df, labelled)
-        self.extension = extension
+        self.extensions = {"jpg", "jpeg", extension}
+
+    def iter_data(self, slice_element=None) -> Iterator[Result]:
+        """Get frames and metadata corresponding to segment
+
+        Args:
+            slice_element (optional): If not specified all frames for the segment will be returned
+
+        Returns:
+            dictionary with the fields:
+            * ``meta``: All metadata corresponding to the segment, this is the same as the data
+              in the labels csv
+            * ``frames``: list of :py:class:`PIL.Image` corresponding to the frames specified
+              in ``slice_element``
+            * ``id``: UID corresponding to segment
+        """
+        slice_element = slice_element or slice(0, len(self))
+        for meta in self.meta_data[slice_element]:
+            clip_id = self._segment_metadata_to_clip_id(meta)
+            folder = os.path.join(
+                self.video_segment_dir,
+                meta[PARTICIPANT_ID_COL],
+                meta[VIDEO_ID_COL],
+                clip_id,
+            )
+            paths = self._find_frames(folder)
+            frames = list(resize_images(paths, self.frame_size))
+            meta["frame_size"] = frames[0].shape
+            meta["num_frames"] = len(frames)
+            result = {"meta": meta, "frames": frames, "id": meta[UID_COL]}
+            yield result
+
+    def __len__(self):
+        return len(self.meta_data)
 
     def _transform_annotations(
         self, annotations: pd.DataFrame, labelled: bool
@@ -79,45 +112,19 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
             data.append(metadata)
         return data
 
-    def iter_data(self, slice_element=None) -> Iterator[Result]:
-        """Get frames and metadata corresponding to segment
+    def _segment_metadata_to_clip_id(self, meta):
+        clip_id = "{video_id}_{uid}_{narration}".format(
+            video_id=meta[VIDEO_ID_COL],
+            uid=meta[UID_COL],
+            narration=meta[NARRATION_COL].lower().strip().replace(" ", "-"),
+        )
+        return clip_id
 
-        Args:
-            slice_element (optional): If not specified all frames for the segment will be returned
-
-        Returns:
-            dictionary with the fields:
-            * ``meta``: All metadata corresponding to the segment, this is the same as the data
-              in the labels csv
-            * ``frames``: list of :py:class:`PIL.Image` corresponding to the frames specified
-              in ``slice_element``
-            * ``id``: UID corresponding to segment
-        """
-        slice_element = slice_element or slice(0, len(self))
-        for meta in self.meta_data[slice_element]:
-            clip_id = "{video_id}_{uid}_{narration}".format(
-                video_id=meta[VIDEO_ID_COL],
-                uid=meta[UID_COL],
-                narration=meta[NARRATION_COL].lower().strip().replace(" ", "-"),
-            )
-            folder = os.path.join(
-                self.video_segment_dir,
-                meta[PARTICIPANT_ID_COL],
-                meta[VIDEO_ID_COL],
-                clip_id,
-            )
-            frame_paths = find_images_in_folder(folder, formats=["jpg", "jpeg"])
-            frames = list(resize_images(frame_paths, self.frame_size))
-            if len(frames) > 0:
-                meta["frame_size"] = frames[0].shape
-                meta["num_frames"] = len(frames)
-                result = {"meta": meta, "frames": frames, "id": meta[UID_COL]}
-                yield result
-            else:
-                raise MissingDataException("{} is not present".format(folder))
-
-    def __len__(self):
-        return len(self.meta_data)
+    def _find_frames(self, folder):
+        frame_paths = find_images_in_folder(folder, formats=self.extensions)
+        if not len(frame_paths) > 0:
+            raise MissingDataException("{} is not present".format(folder))
+        return frame_paths
 
 
 class EpicFlowDatasetAdapter(EpicDatasetAdapter):
@@ -127,40 +134,37 @@ class EpicFlowDatasetAdapter(EpicDatasetAdapter):
     def iter_data(self, slice_element=None):
         slice_element = slice_element or slice(0, len(self))
         for meta in self.meta_data[slice_element]:
-            clip_id = "{video_id}_{uid}_{narration}".format(
-                video_id=meta[VIDEO_ID_COL],
-                uid=meta[UID_COL],
-                narration=meta[NARRATION_COL].lower().strip().replace(" ", "-"),
-            )
-            folder = {}
-            paths = {}
+            paths = self._find_uv_frames(meta)
+
             frames = {}
             for axis in "u", "v":
-                folder[axis] = os.path.join(
-                    self.video_segment_dir,
-                    meta[PARTICIPANT_ID_COL],
-                    meta[VIDEO_ID_COL],
-                    axis,
-                    clip_id,
-                )
-                paths[axis] = glob.glob(
-                    folder[axis] + os.path.sep + "*." + self.extension, recursive=True
-                )
                 frames[axis] = list(resize_images(paths[axis], self.frame_size))
-            if len(frames["u"]) > 0:
-                meta["frame_size"] = frames["u"][0].shape
-                meta["num_frames"] = len(frames["u"])
-                result = {
-                    "meta": meta,
-                    "frames": list(_intersperse(frames["u"], frames["v"])),
-                    "id": meta[UID_COL],
-                }
-                yield result
-            else:
-                raise MissingDataException("{} is not present".format(folder["u"]))
 
-    def __len__(self):
-        return len(self.meta_data)
+            meta["frame_size"] = frames["u"][0].shape
+            meta["num_frames"] = len(frames["u"])
+            result = {
+                "meta": meta,
+                "frames": list(_intersperse(frames["u"], frames["v"])),
+                "id": meta[UID_COL],
+            }
+            yield result
+
+    def _find_uv_frames(self, meta):
+        clip_id = self._segment_metadata_to_clip_id(meta)
+        folder = {}
+        paths = {}
+        for axis in "u", "v":
+            folder[axis] = os.path.join(
+                self.video_segment_dir,
+                meta[PARTICIPANT_ID_COL],
+                meta[VIDEO_ID_COL],
+                axis,
+                clip_id,
+            )
+            paths[axis] = find_images_in_folder(folder[axis], formats=self.extensions)
+            if not len(paths[axis]) > 0:
+                raise MissingDataException("{} is not present".format(folder["u"]))
+        return paths
 
 
 def _intersperse(*lists):

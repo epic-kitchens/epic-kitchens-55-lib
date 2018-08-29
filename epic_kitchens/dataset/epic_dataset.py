@@ -1,6 +1,6 @@
 import copy
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Union, Iterable
 
 import PIL.Image
 from gulpio import GulpDirectory
@@ -24,6 +24,7 @@ _class_getters = {
         "verb": _verb_class_getter(metadata),
         "noun": _noun_class_getter(metadata),
     },
+    None: lambda meta: None,
 }
 
 _verb_class_count = 125
@@ -32,6 +33,7 @@ _class_count = {
     "verb": _verb_class_count,
     "noun": _noun_class_count,
     "verb+noun": (_verb_class_count, _noun_class_count),
+    None: 0,
 }
 
 
@@ -90,7 +92,7 @@ class GulpVideoSegment(VideoSegment):
 class EpicVideoDataset(VideoDataset):
     def __init__(
         self,
-        gulp_path: Path,
+        gulp_path: Union[Path, str],
         class_type: str,
         *,
         with_metadata: bool = False,
@@ -107,7 +109,8 @@ class EpicVideoDataset(VideoDataset):
         gulp_path
             Path to gulp directory containing the gulped EPIC RGB or flow frames
         class_type
-            One of verb, noun, verb+noun, determines what label the segment returns
+            One of verb, noun, verb+noun, None, determines what label the segment returns.
+            None should be used for loading test datasets
         with_metadata
             When True the segments will yield a tuple (metadata, class) where the class is defined by the
             class getter and the metadata is the raw dictionary stored in the gulp file.
@@ -126,6 +129,8 @@ class EpicVideoDataset(VideoDataset):
             segment_filter=segment_filter,
             sample_transform=sample_transform,
         )
+        if isinstance(gulp_path, str):
+            gulp_path = Path(gulp_path)
         assert gulp_path.exists(), "Could not find the path {}".format(gulp_path)
         self.gulp_dir = GulpDirectory(str(gulp_path))
         if class_getter is None:
@@ -133,17 +138,19 @@ class EpicVideoDataset(VideoDataset):
         if with_metadata:
             original_getter = copy.copy(class_getter)
             class_getter = lambda metadata: (metadata, original_getter(metadata))
-        self._video_list = self._read_segments(
+        self._video_segments = self._read_segments(
             self.gulp_dir.merged_meta_dict, class_getter
         )
 
     @property
     def video_segments(self) -> List[VideoSegment]:
-        return self._video_list
+        return list(self._video_segments.values())
 
     def load_frames(
-        self, segment: VideoSegment, indices: List[int]
+        self, segment: VideoSegment, indices: Optional[Iterable[int]] = None
     ) -> List[PIL.Image.Image]:
+        if indices is None:
+            indices = range(0, segment.num_frames)
         selected_frames = []  # type: List[PIL.Image.Image]
         for i in indices:
             # Without passing a slice to the gulp directory index we load ALL the frames
@@ -158,16 +165,19 @@ class EpicVideoDataset(VideoDataset):
     def __len__(self):
         return len(self.video_segments)
 
+    def __getitem__(self, id):
+        return self._video_segments[id]
+
     def _read_segments(
         self, gulp_dir_meta_dict, class_getter: Callable[[Dict[str, Any]], Any]
-    ) -> List[VideoSegment]:
-        segments = []  # type: List[VideoSegment]
+    ) -> Dict[str, VideoSegment]:
+        segments = dict()  # type: Dict[str, VideoSegment]
         for video_id in gulp_dir_meta_dict:
             segment = GulpVideoSegment(
                 gulp_dir_meta_dict[video_id]["meta_data"][0], class_getter
             )
             if self.segment_filter(segment):
-                segments.append(segment)
+                segments[segment.id] = segment
         return segments
 
     def _sample_video_at_index(
