@@ -25,5 +25,9 @@ $ pip install epic-kitchens
 
 See the [CHANGELOG](CHANGELOG.md) for release notes
 
+**WARNING**: If you have used v1.4.0 or below to gulp flow, please delete the
+data and regulp due to an issue in reading files from disk, the gulped frames will
+be unordered instead of ordered by frame index (i.e. lexicographically).
+
 Check out the documentation on [Read the
 docs](https://epic-kitchens.readthedocs.io/en/latest/index.html)
