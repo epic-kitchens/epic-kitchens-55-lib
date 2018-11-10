@@ -1,6 +1,6 @@
 Pygments==2.2.0
 sphinx-rtd-theme==0.4.2
-sphinx-autodoc-typehints==1.3.0
+sphinx-autodoc-typehints==1.4.0
 gulpio==531.53
 numpy==1.15.3
 pandas==0.23.4
