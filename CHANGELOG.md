@@ -1,3 +1,12 @@
+# Version 1.6.0
+
+## Features
+
+* Add `epic_kitchens.meta` package containing helpers for downloading and reading
+  label class definitions, and training and test set annotations.
+* Add `epic_kitchens.data.visualisation` package containing tools that allow you
+  to view arbitrary action segments RGB or Flow contained in a `EpicVideoDataset`
+  using `moviepy`. This is useful when sifting through results per instance.
 
 # Version 1.5.0
 
