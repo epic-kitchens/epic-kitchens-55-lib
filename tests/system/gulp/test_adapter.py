@@ -1,16 +1,12 @@
 import cv2
-import pytest
-from PIL import Image
-from pathlib import Path
+from skimage.measure import compare_ssim as ssim
 
 from epic_kitchens.gulp.__main__ import main, parser
 from gulpio.dataset import GulpDirectory
 import pandas as pd
 import numpy as np
 
-DATASET_DIR = Path(__file__).parent.parent / "dataset"
-SEGMENT_DIR = DATASET_DIR / "media" / "segments"
-ANNOTATIONS_DIR = DATASET_DIR / "annotations"
+from tests import SEGMENT_DIR, ANNOTATIONS_DIR
 
 
 def test_gulping_labelled_rgb_segments(tmpdir):
@@ -87,7 +83,7 @@ def assert_number_of_segments(gulp_dir, number_of_segments):
 
 
 def assert_gulped_flow_frames_similar_to_on_disk(
-    gulp_dir, annotations, segment_dir, uid, max_discrepancy=1
+    gulp_dir, annotations, segment_dir, uid, min_ssim=0.95
 ):
     """
     Assert that the first 2 gulped frames for a given UID are close to those on disk.
@@ -105,10 +101,8 @@ def assert_gulped_flow_frames_similar_to_on_disk(
         for frame, gulp_frame in zip(u_frames, gulp_frames):
             assert frame.shape == gulp_frame.shape
 
-            # We let there be a maximum discrepancy of 1 per pixel throughout the image
-            max_discrepancy = np.prod(frame.shape) * max_discrepancy
-            discrepancy = np.sum(np.abs(frame - gulp_frame))
-            assert discrepancy <= max_discrepancy
+            computed_ssim = ssim(gulp_frame, frame, data_range=255.0)
+            assert computed_ssim >= min_ssim
 
 
 def assert_gulped_rgb_frames_similar_to_on_disk(
