@@ -2,15 +2,15 @@
 
 
 LIBRARY_DIR := epic_kitchens
-SRC_FILES := $(shell find epic_kitchens) 
+SRC_FILES := $(shell find epic_kitchens)
 SRC_FILES += setup.py
 SYSTEM_TEST_DATASET_URL := "https://s3-eu-west-1.amazonaws.com/wp-research-public/epic/system_test_dataset.zip"
-SYSTEM_TEST_DATASET_ETAG := $(shell cat tests/system_test_dataset.etag) 
+SYSTEM_TEST_DATASET_ETAG := $(shell cat tests/system_test_dataset.etag)
 
 all: test
 
 docs:
-	$(MAKE) html -C docs 
+	$(MAKE) html -C docs
 
 test: compile tests/dataset
 	tox
@@ -32,7 +32,7 @@ compile:
 	python -m compileall $(LIBRARY_DIR) -j $$(nproc)
 
 format:
-	black epic_kitchens
+	black epic_kitchens tests setup.py
 
 flake8:
 	flake8 epic_kitchens
