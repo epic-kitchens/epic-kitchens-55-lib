@@ -122,10 +122,10 @@ def noun_classes() -> pd.DataFrame:
 
     Returns
     -------
-    ``pd.DataFrame`` with the columns:
-        ``index``: int, the numeric noun class
-        ``class_key``: str, canonical noun representing the class as a whole
-        ``nouns``: [str], the list of nouns that are clustered into this class.
+    pd.DataFrame
+        Dataframe with the columns:
+
+        .. include:: meta/noun_classes.rst
     """
     return _annotation_repository.noun_classes().copy()
 
@@ -137,10 +137,10 @@ def verb_classes() -> pd.DataFrame:
 
     Returns
     -------
-    ``pd.DataFrame`` with the columns:
-        ``index``: int, the numeric verb class
-        ``class_key``: str, canonical verb representing the class as a whole
-        ``verbs``: [str], the list of verbs that are clustered into this class.
+    pd.DataFrame
+        Dataframe with the columns:
+
+        .. include:: meta/verb_classes.rst
     """
     return _annotation_repository.verb_classes().copy()
 
@@ -150,7 +150,7 @@ def many_shot_verbs() -> Set[int]:
 
     Returns
     -------
-    many_shot_verbs
+    many_shot_verbs : Set[int]
         The set of verb classes that are many shot (appear more than 100 times in training).
 
     """
@@ -162,7 +162,7 @@ def many_shot_nouns() -> Set[int]:
 
     Returns
     -------
-    many_shot_nouns
+    many_shot_nouns : Set[int]
         The set of noun classes that are many shot (appear more than 100 times in training).
 
     """
@@ -174,7 +174,8 @@ def many_shot_actions() -> Set[ActionClass]:
 
     Returns
     -------
-    many_shot_actions
+    many_shot_actions : Set[ActionClass]
+
         The set of actions classes that are many shot (verb_class appears more than 100 times
         in training, noun_class appears more than 100 times in training, and the action appears
         at least once in training).
@@ -184,18 +185,64 @@ def many_shot_actions() -> Set[ActionClass]:
 
 
 def is_many_shot_action(action_class: ActionClass) -> bool:
+    """
+
+    Parameters
+    ----------
+    action_class
+
+    Returns
+    -------
+    bool
+        Whether action_class is many shot or not
+
+    """
     return action_class in _annotation_repository.many_shot_actions()
 
 
 def is_many_shot_verb(verb_class: int) -> bool:
+    """
+
+    Parameters
+    ----------
+    verb_class
+
+    Returns
+    -------
+    bool
+        Whether verb_class is many shot or not
+
+    """
     return verb_class in _annotation_repository.many_shot_verbs()
 
 
 def is_many_shot_noun(noun_class: int) -> bool:
+    """
+
+    Parameters
+    ----------
+    noun_class
+
+    Returns
+    -------
+    bool
+        Whether noun class is many shot or not
+
+    """
     return noun_class in _annotation_repository.many_shot_nouns()
 
 
 def training_narrations() -> pd.DataFrame:
+    """
+
+    Returns
+    -------
+    pd.DataFrame
+        Dataframe with the columns:
+
+        .. include:: meta/train_action_narrations.rst
+
+    """
     return _annotation_repository.train_action_narrations()
 
 
@@ -205,7 +252,9 @@ def training_labels() -> pd.DataFrame:
     Returns
     -------
     training_labels : pd.DataFrame
-        Metadata describing the training action annotations with the following rows
+        Dataframe with the columns:
+
+        .. include:: meta/train_action_labels.rst
 
 
     """
@@ -214,12 +263,12 @@ def training_labels() -> pd.DataFrame:
 
 def training_object_labels() -> pd.DataFrame:
     """
-
     Returns
     -------
-    training_object_labels : pd.DataFrame
-        Metadata describing the training object annotations with the following rows
+    pd.DataFrame
+        Dataframe with the columns:
 
+        .. include:: meta/train_object_labels.rst
 
     """
     return _annotation_repository.train_object_labels().copy()
@@ -234,8 +283,10 @@ def test_timestamps(split: str) -> pd.DataFrame:
 
     Returns
     -------
-    timestamps
-        Timestamps of test action segments with the following rows
+    timestamps : pd.DataFrame
+        Dataframe with the columns:
+
+        .. include:: meta/test_timestamps.rst
 
     """
     if split == "all":
@@ -258,9 +309,10 @@ def video_descriptions() -> pd.DataFrame:
 
     Returns
     -------
-    video_descriptions
+    video_descriptions : pd.DataFrame
         High level description of the task trying to be accomplished in a video
 
+        .. include:: meta/video_descriptions.rst
     """
     return _annotation_repository.video_descriptions().copy()
 
@@ -270,8 +322,10 @@ def video_info() -> pd.DataFrame:
 
     Returns
     -------
-    video_info
+    video_info : pd.DataFrame
         Technical information stating the resolution, duration and FPS of each video.
+
+        .. include:: meta/video_info.rst
 
     """
     return _annotation_repository.video_info().copy()

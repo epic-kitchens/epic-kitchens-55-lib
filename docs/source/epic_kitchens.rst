@@ -47,6 +47,23 @@ epic\_kitchens.gulp.adapter
     :undoc-members:
     :show-inheritance:
 
+epic\_kitchens.gulp.visualisation
+---------------------------------
+
+.. automodule:: epic_kitchens.gulp.visualisation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+epic\_kitchens.meta
+-------------------
+
+.. automodule:: epic_kitchens.meta
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 epic\_kitchens.preprocessing
 ----------------------------
 
@@ -87,4 +104,3 @@ epic\_kitchens.video
     :members:
     :undoc-members:
     :show-inheritance:
-
