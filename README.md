@@ -2,7 +2,7 @@
 
 [![CircleCI status badge](https://img.shields.io/circleci/project/github/epic-kitchens/epic-lib/master.svg)](https://circleci.com/gh/epic-kitchens/epic-lib)
 [![codecov](https://codecov.io/gh/epic-kitchens/epic-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/epic-kitchens/epic-lib)
-[![Documentation Status](https://readthedocs.org/projects/epic-kitchens/badge/?version=latest)](http://epic-kitchens.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/epic-kitchens/badge/?version=stable)](http://epic-kitchens.readthedocs.io/en/stable/?badge=stable)
 [![PyPI](https://img.shields.io/pypi/v/epic-kitchens.svg)](https://pypi.org/project/epic-kitchens/#description)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/epic-kitchens.svg)](https://pypi.org/project/epic-kitchens/)
 
@@ -30,4 +30,4 @@ data and regulp due to an issue in reading files from disk, the gulped frames wi
 be unordered instead of ordered by frame index (i.e. lexicographically).
 
 Check out the documentation on [Read the
-docs](https://epic-kitchens.readthedocs.io/en/latest/index.html)
+docs](https://epic-kitchens.readthedocs.io/en/stable/index.html)
