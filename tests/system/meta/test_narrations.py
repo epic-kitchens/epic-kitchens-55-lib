@@ -1,10 +1,10 @@
 import pytest
-import epic_kitchens.meta.narrations
+import epic_kitchens.meta
 
 
 @pytest.fixture(scope="module")
 def training_narrations(tmp_datadir):
-    return epic_kitchens.meta.narrations.training_narrations()
+    return epic_kitchens.meta.training_narrations()
 
 
 def test_training_narrations_has_at_least_20_000_entries(training_narrations):

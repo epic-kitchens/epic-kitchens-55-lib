@@ -1,21 +1,21 @@
 import pytest
 
-from epic_kitchens.meta import test
+from epic_kitchens import meta
 
 
 @pytest.fixture(scope="module")
 def test_seen_timestamps(tmp_datadir):
-    return test.test_timestamps("seen")
+    return meta.test_timestamps("seen")
 
 
 @pytest.fixture(scope="module")
 def test_unseen_timestamps(tmp_datadir):
-    return test.test_timestamps("unseen")
+    return meta.test_timestamps("unseen")
 
 
 @pytest.fixture(scope="module")
 def test_timestamps(test_seen_timestamps, test_unseen_timestamps):
-    return test.test_timestamps("all")
+    return meta.test_timestamps("all")
 
 
 def test_seen_split_has_more_than_8000_items(test_seen_timestamps):

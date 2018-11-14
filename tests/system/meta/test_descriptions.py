@@ -1,12 +1,12 @@
 from datetime import datetime
 
-import epic_kitchens.meta.descriptions
+import epic_kitchens.meta
 import pytest
 
 
 @pytest.fixture(scope="module")
 def descriptions(tmp_datadir):
-    return epic_kitchens.meta.descriptions.descriptions()
+    return epic_kitchens.meta.video_descriptions()
 
 
 def test_descriptions_has_at_least_432_entries(descriptions):

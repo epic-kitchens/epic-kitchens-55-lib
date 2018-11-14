@@ -2,17 +2,17 @@ from functools import reduce
 
 import pytest
 
-from epic_kitchens.meta import train, set_datadir
+from epic_kitchens import meta
 
 
 @pytest.fixture(scope="module")
 def training_labels(tmp_datadir):
-    return train.training_labels()
+    return meta.training_labels()
 
 
 @pytest.fixture(scope="module")
 def training_object_labels(tmp_datadir):
-    return train.training_object_labels()
+    return meta.training_object_labels()
 
 
 def test_training_action_labels_has_more_than_20000_items(training_labels):
