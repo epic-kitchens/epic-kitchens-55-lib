@@ -2,7 +2,9 @@ import PIL.Image
 import numpy as np
 from abc import ABC
 from moviepy.editor import ImageSequenceClip
+from moviepy.video.io.html_tools import ipython_display
 from typing import List, Union, Tuple
+from IPython.display import HTML
 
 from epic_kitchens.dataset.epic_dataset import EpicVideoDataset
 
@@ -80,10 +82,11 @@ def combine_flow_uv_frames(
     u_frames = np.array(uv_frames[::2])
     v_frames = np.array(uv_frames[1::2])
 
-    return hstack_frames(u_frames, v_frames, width_axis)
+    return hstack_frames(u_frames, v_frames, width_axis=width_axis)
 
 
 def hstack_frames(*frame_sequences: np.ndarray, width_axis: int = 2) -> np.ndarray:
+    print([f.shape for f in frame_sequences])
     return np.concatenate(frame_sequences, axis=width_axis)
 
 
@@ -91,7 +94,7 @@ class Visualiser(ABC):
     def __init__(self, dataset: EpicVideoDataset) -> None:
         self.dataset = dataset
 
-    def show(self, uid: Union[int, str], **kwargs) -> ImageSequenceClip:
+    def show(self, uid: Union[int, str], **kwargs) -> HTML:
         """
         Show the given video corresponding to ``uid`` in a HTML5 video element.
 
@@ -101,10 +104,11 @@ class Visualiser(ABC):
         """
         frames = self.dataset.load_frames(self.dataset[uid])
         clip = self._clipify_frames(frames, **kwargs)
-        clip.ipython_display()
-        return clip
+        return ipython_display(clip)
 
-    def _clipify_frames(self, frames: List[PIL.Image.Image], fps: float = 60.):
+    def _clipify_frames(
+        self, frames: List[PIL.Image.Image], fps: float = 60.
+    ) -> ImageSequenceClip:
         raise NotImplementedError()
 
 

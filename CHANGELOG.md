@@ -1,3 +1,20 @@
+# Version 1.6.2
+
+## Bug fix
+
+* `epic_kitchens.gulp.visualisation` visualisers returned `ImageSequenceClip`
+  instead of IPython HTML display element, which caused the videos not to show
+  up in Jupyter, these methods now return an `IPython.display.HTML` element
+* Fix bug in `epic_kitchens.gulp.visualisation.combine_flow_uv_frames` where
+  `hstack_frames` wasn't called with `width_axis` correctly causing a
+  RuntimeError
+
+# Version 1.6.1
+
+## Bug fix
+
+* Add sphinx 1.8.2 to requirements.txt to get RTFD to build the docs
+
 # Version 1.6.0
 
 ## Features
