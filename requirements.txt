@@ -1,4 +1,5 @@
 Pygments==2.2.0
+sphinx==1.8.2
 sphinx-rtd-theme==0.4.2
 sphinx-autodoc-typehints==1.5.0
 gulpio==531.53
