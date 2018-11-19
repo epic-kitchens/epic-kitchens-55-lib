@@ -15,7 +15,7 @@ def main(args):
             for key, val in segment_metadata.items():
                 old_segment_metadata[key] = val
             return old_segment_metadata
-        except IndexError:
+        except KeyError:
             return None
 
     for dir in args.gulp_dirs:
