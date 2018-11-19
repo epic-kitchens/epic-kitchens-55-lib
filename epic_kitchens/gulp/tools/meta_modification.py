@@ -89,35 +89,6 @@ def modify_metadata(
             json.dump(meta_dict, f)
 
 
-def iterate_gulp_dir_metadata_files(gulp_dir: Path) -> Iterator[Path]:
-    """Iterate over gulp directory yielding metadata file paths
-
-    Args:
-        gulp_dir: Directory containing *.gmeta and *.gulp files.
-
-    Yields:
-        Path of a gmeta file
-    """
-    metadata_pattern = re.compile(r"^meta_\d+\.gmeta")
-    for child in gulp_dir.iterdir():
-        if metadata_pattern.match(child.name):
-            yield child
-
-
-def iterate_metadata(
-    full_meta_dict: GulpDirectoryMetaDict
-) -> Iterator[GulpMetaDataDict]:
-    """
-    Args:
-        full_meta_dict: Full metadata dict (e.g. from :method:`GulpDirectory.merged_meta_dict`
-
-    Yields:
-        meta_data dictionary for a single segment.
-    """
-    for id_ in full_meta_dict.keys():
-        yield full_meta_dict[id_]["meta_data"][0]
-
-
 def _find_meta_files(path: Path) -> List[Path]:
     return sorted(list(map(Path, glob.glob(str(path.joinpath("meta*.gmeta"))))))
 
