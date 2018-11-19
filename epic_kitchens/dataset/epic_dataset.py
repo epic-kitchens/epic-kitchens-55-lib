@@ -9,6 +9,11 @@ from epic_kitchens.labels import VERB_CLASS_COL, NOUN_CLASS_COL, UID_COL
 from epic_kitchens.dataset.video_dataset import VideoDataset, VideoSegment
 
 
+SegmentFilter = Callable[[VideoSegment], bool]
+ClassGetter = Callable[[Dict[str, Any]], Any]
+VideoTransform = Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]
+
+
 def _verb_class_getter(metadata):
     return int(metadata[VERB_CLASS_COL])
 
@@ -38,7 +43,7 @@ _class_count = {
 
 
 class GulpVideoSegment(VideoSegment):
-    """ SegmentRecord for a video segment stored in a gulp file.
+    """SegmentRecord for a video segment stored in a gulp file.
 
     Assumes that the video segment has the following metadata in the gulp file:
       - id
@@ -55,11 +60,12 @@ class GulpVideoSegment(VideoSegment):
         self.gulp_index = gulp_metadata_dict[UID_COL]
 
     @property
-    def id(self):
+    def id(self) -> str:
+        """ID of video segment"""
         return self.gulp_index
 
     @property
-    def label(self):
+    def label(self) -> Any:
         cls = self.class_getter(self.metadata)
         # WARNING: this type check should be removed once we regulp our data
         # so that classes are ints in the metadata json
@@ -70,6 +76,7 @@ class GulpVideoSegment(VideoSegment):
 
     @property
     def num_frames(self) -> int:
+        """Number of video frames"""
         return self.metadata["num_frames"]
 
     def __getitem__(self, item):
@@ -90,39 +97,38 @@ class GulpVideoSegment(VideoSegment):
 
 
 class EpicVideoDataset(VideoDataset):
+    """VideoDataset for gulped RGB frames"""
+
     def __init__(
         self,
         gulp_path: Union[Path, str],
         class_type: str,
         *,
         with_metadata: bool = False,
-        class_getter: Optional[Callable[[Dict[str, Any]], Any]] = None,
-        segment_filter: Optional[Callable[[VideoSegment], bool]] = None,
-        sample_transform: Optional[
-            Callable[[List[PIL.Image.Image]], List[PIL.Image.Image]]
-        ] = None
+        class_getter: Optional[ClassGetter] = None,
+        segment_filter: Optional[SegmentFilter] = None,
+        sample_transform: Optional[VideoTransform] = None
     ) -> None:
         """
+        Args:
+            gulp_path: Path to gulp directory containing the gulped EPIC RGB or flow frames
 
-        Parameters
-        ----------
-        gulp_path
-            Path to gulp directory containing the gulped EPIC RGB or flow frames
-        class_type
-            One of verb, noun, verb+noun, None, determines what label the segment returns.
-            None should be used for loading test datasets
-        with_metadata
-            When True the segments will yield a tuple (metadata, class) where the class is defined by the
-            class getter and the metadata is the raw dictionary stored in the gulp file.
-        class_getter
-            Optionally provide a callable that takes in the gulp dict representing the segment from which
-            you should return the class you wish the segment to have
-        segment_filter
-            Optionally provide a callable that takes a segment and returns True if you want to keep the
-            segment in the dataset, or False if you wish to exclude it
-        sample_transform
-            Optionally provide a sample transform function which takes a list of PIL images and transforms
-            each of them. This is applied on the frames just before returning from load_frames
+            class_type: One of verb, noun, verb+noun, None, determines what label the segment
+                returns. ``None`` should be used for loading test datasets.
+
+            with_metadata: When True the segments will yield a tuple (metadata, class) where the
+                class is defined by the class getter and the metadata is the raw dictionary stored
+                in the gulp file.
+
+            class_getter: Optionally provide a callable that takes in the gulp dict representing the
+                segment from which you should return the class you wish the segment to have.
+
+            segment_filter: Optionally provide a callable that takes a segment and returns True if
+                you want to keep the segment in the dataset, or False if you wish to exclude it.
+
+            sample_transform: Optionally provide a sample transform function which takes a list of
+                PIL images and transforms each of them. This is applied on the frames just before
+                returning from :meth:`load_frames`.
         """
         super().__init__(
             _class_count[class_type],
@@ -144,11 +150,26 @@ class EpicVideoDataset(VideoDataset):
 
     @property
     def video_segments(self) -> List[VideoSegment]:
+        """
+        List of video segments that are present in the dataset. The describe the start and stop
+        times of the clip and its class.
+        """
         return list(self._video_segments.values())
 
     def load_frames(
         self, segment: VideoSegment, indices: Optional[Iterable[int]] = None
     ) -> List[PIL.Image.Image]:
+        """
+        Load frame(s) from gulp directory.
+
+        Args:
+            segment: Video segment to load
+            indices: Frames indices to read
+
+        Returns:
+            Frames indexed by ``indices`` from the ``segment``.
+
+        """
         if indices is None:
             indices = range(0, segment.num_frames)
         selected_frames = []  # type: List[PIL.Image.Image]
@@ -189,6 +210,11 @@ class EpicVideoDataset(VideoDataset):
 
 
 class EpicVideoFlowDataset(EpicVideoDataset):
+    """VideoDataset for loading gulped flow. The loader assumes that flow :math:`u`, :math:`v`
+    frames are stored alternately in a flat manner: :math:`[u_0, v_0, u_1, v_1, \ldots, u_n, v_n]`
+
+    """
+
     def _sample_video_at_index(
         self, record: VideoSegment, index: int
     ) -> List[PIL.Image.Image]:

@@ -7,9 +7,12 @@ from typing import List, Union, Tuple
 from epic_kitchens.dataset.epic_dataset import EpicVideoDataset
 
 
-def _grey_to_rgb(frames: np.array) -> np.array:
+def _grey_to_rgb(frames: np.ndarray) -> np.ndarray:
     """
     Convert frame(s) from gray (2D array) to RGB (3D array)
+
+    Args:
+        frames: A single frame or set of frames
     """
     if not (2 <= frames.ndim <= 3):
         raise ValueError(
@@ -23,6 +26,20 @@ def _grey_to_rgb(frames: np.array) -> np.array:
 def clipify_rgb(
     frames: List[PIL.Image.Image], *, fps: float = 60.
 ) -> ImageSequenceClip:
+    """
+
+    Args:
+        frames: A list of frames
+        fps: FPS of clip
+
+    Returns
+    -------
+    moviepy.editor.ImageSequenceClip
+        Frames concatenated into clip
+
+
+
+    """
     if frames == 0:
         raise ValueError("Expected at least one frame, but received none")
     frames = [np.array(frame) for frame in frames]
@@ -34,8 +51,16 @@ def clipify_flow(
     frames: List[PIL.Image.Image], *, fps: float = 30.
 ) -> ImageSequenceClip:
     """
-    Destack flow frames, join them side by side and then create an ImageSequenceClip
+    Destack flow frames, join them side by side and then create a clip
     for display
+
+    Args:
+        frames:
+            A list of alternating :math:`u`, :math:`v` flow frames to join into a video. Even indices should
+            be :math:`u` flow frames, and odd indices, :math:`v` flow frames.
+
+        fps: float, optional
+            FPS of generated :py:class:`moviepy.editor.ImageSequenceClip`
     """
     if frames == 0:
         raise ValueError("Expected at least one frame, but received none")
@@ -44,11 +69,12 @@ def clipify_flow(
 
 
 def combine_flow_uv_frames(
-    uv_frames: Union[List[PIL.Image.Image], np.array], *, method="hstack", width_axis=2
-) -> np.array:
-    """
-    Destack (u, v) frames and concatenate them side by side for display purposes
-    """
+    uv_frames: Union[List[PIL.Image.Image], np.ndarray],
+    *,
+    method="hstack",
+    width_axis=2
+) -> np.ndarray:
+    """Destack (u, v) frames and concatenate them side by side for display purposes"""
     if isinstance(uv_frames[0], PIL.Image.Image):
         uv_frames = list(map(np.array, uv_frames))
     u_frames = np.array(uv_frames[::2])
@@ -57,7 +83,7 @@ def combine_flow_uv_frames(
     return hstack_frames(u_frames, v_frames, width_axis)
 
 
-def hstack_frames(*frame_sequences: np.array, width_axis: int = 2) -> np.array:
+def hstack_frames(*frame_sequences: np.ndarray, width_axis: int = 2) -> np.ndarray:
     return np.concatenate(frame_sequences, axis=width_axis)
 
 
@@ -69,14 +95,9 @@ class Visualiser(ABC):
         """
         Show the given video corresponding to ``uid`` in a HTML5 video element.
 
-        Parameters
-        ----------
-        uid: UID of video segment
-        fps (float): optional,
-
-        Returns
-        -------
-        ImageSequenceClip of the sequence
+        Args:
+            uid: UID of video segment
+            fps (float, optional): FPS of video sequence
         """
         frames = self.dataset.load_frames(self.dataset[uid])
         clip = self._clipify_frames(frames, **kwargs)
@@ -88,10 +109,14 @@ class Visualiser(ABC):
 
 
 class RgbVisualiser(Visualiser):
+    """Visualiser for video dataset containing RGB frames"""
+
     def _clipify_frames(self, frames: List[PIL.Image.Image], fps: float = 60.):
         return clipify_rgb(frames, fps=fps)
 
 
 class FlowVisualiser(Visualiser):
+    """Visualiser for video dataset containing optical flow :math:`(u, v)` frames"""
+
     def _clipify_frames(self, frames: List[PIL.Image.Image], fps: float = 30):
         return clipify_flow(frames, fps=fps)

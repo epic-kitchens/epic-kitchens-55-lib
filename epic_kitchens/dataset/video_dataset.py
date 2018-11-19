@@ -27,7 +27,7 @@ class VideoDataset(ABC):
     A dataset interface for use with :class:`TsnDataset`. Implement this interface if you
     wish to use your dataset with TSN.
 
-    We cannot use torch.utils.data.Dataset because we need to yield information about
+    We cannot use :class:`torch.utils.data.Dataset` because we need to yield information about
     the number of frames per video, which we can't do with the standard
     torch.utils.data.Dataset.
     """

@@ -2,7 +2,7 @@ import urllib.request
 from pathlib import Path
 from unittest.mock import Mock, MagicMock
 
-from epic_kitchens._utils import before, maybe_download
+from epic_kitchens.internal.utils import before, maybe_download
 
 
 URL_ROOT = "https://raw.githubusercontent.com/epic-kitchens/annotations/master/"

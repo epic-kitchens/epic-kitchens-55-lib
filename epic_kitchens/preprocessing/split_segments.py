@@ -12,7 +12,12 @@ import sys
 import pandas as pd
 
 from epic_kitchens.labels import VIDEO_ID_COL
-from epic_kitchens.video import Modality, FlowModality, RGBModality, split_video_frames
+from epic_kitchens.video import (
+    ModalityIterator,
+    FlowModalityIterator,
+    RGBModalityIterator,
+    split_video_frames,
+)
 
 HELP = """\
 Process frame dumps, and a set of annotations in a pickled dataframe
@@ -115,12 +120,12 @@ def main(args):
     if args.modality.lower() == "rgb":
         frame_dirs = [args.frame_dir]
         links_dirs = [args.links_dir]
-        modality = RGBModality(fps=fps)  # type: Modality
+        modality = RGBModalityIterator(fps=fps)  # type: ModalityIterator
     elif args.modality.lower() == "flow":
         axes = ["u", "v"]
         frame_dirs = [args.frame_dir.joinpath(axis) for axis in axes]
         links_dirs = [args.links_dir.joinpath(axis) for axis in axes]
-        modality = FlowModality(
+        modality = FlowModalityIterator(
             rgb_fps=fps, stride=int(args.of_stride), dilation=int(args.of_dilation)
         )
     else:

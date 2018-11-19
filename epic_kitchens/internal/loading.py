@@ -73,6 +73,7 @@ class AnnotationRepository:
     def __init__(
         self, version: str = "v1.5.0", local_dir: Optional[Path] = None
     ) -> None:
+        self.version = version
         base_url = "https://github.com/epic-kitchens/annotations/raw/{}/".format(
             version
         )

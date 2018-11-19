@@ -16,22 +16,24 @@ LOG = logging.getLogger(__name__)
 Timestamp = str
 
 
-class Modality(ABC):
+class ModalityIterator(ABC):
     """Interface that a modality extracted from video must implement"""
 
     def frame_iterator(self, start: Timestamp, stop: Timestamp) -> Iterable[int]:
         """
         Args:
-            start: start time (timestamp: HH:MM:SS)
-            stop: stop time (timestamp: HH:MM:SS)
+            start: start time (timestamp: ``HH:MM:SS[.FractionalPart]``)
+            stop: stop time (timestamp: ``HH:MM:SS[.FractionalPart]``)
 
         Yields:
-            frame indices corresponding to segment from start time to stop time
+            Frame indices iterator corresponding to segment from ``start`` to ``stop``
         """
         raise NotImplementedError
 
 
-class RGBModality(Modality):
+class RGBModalityIterator(ModalityIterator):
+    """Iterator for RGB frames"""
+
     def __init__(self, fps):
         self.fps = fps
 
@@ -41,8 +43,17 @@ class RGBModality(Modality):
         return range(start_frame, stop_frame)
 
 
-class FlowModality(Modality):
+class FlowModalityIterator(ModalityIterator):
+    """Iterator for optical flow :math:`(u, v)` frames"""
+
     def __init__(self, dilation=1, stride=1, bound=20, rgb_fps=59.94):
+        """
+        Args:
+            dilation: Dilation that optical flow was extracted with
+            stride: Stride that optical flow was extracted with
+            bound: Bound that optical flow was extracted with
+            rgb_fps: FPS of RGB video flow was computed from
+        """
         self.dilation = dilation
         self.stride = stride
         self.bound = bound
@@ -73,13 +84,25 @@ def iterate_frame_dir(root: Path) -> Iterator[Tuple[Path, Path]]:
 
 
 def split_dataset_frames(
-    modality: Modality,
+    modality_iterator: ModalityIterator,
     frames_dir: Path,
     segment_root_dir: Path,
     annotations: pd.DataFrame,
     frame_format="frame%06d.jpg",
     pattern=re.compile(".*"),
-):
+) -> None:
+    """Split dumped video frames from ``frames_dir`` into directories within ``segment_root_dir`` for each
+    video segment defined in ``annotations``.
+
+    Args:
+        modality_iterator: Modality iterator of frames
+        frames_dir: Directory containing dumped frames
+        segment_root_dir: Directory to write split segments to
+        annotations: Dataframe containing segment information
+        frame_format (str, optional): Old style string format that must contain a single ``%d`` formatter
+            describing file name format of the dumped frames.
+        pattern (re.Pattern, optional): Regexp to match video directories
+    """
     assert frames_dir.exists()
 
     frames_dir = frames_dir.resolve()
@@ -92,7 +115,7 @@ def split_dataset_frames(
                 annotations[VIDEO_ID_COL] == video_dir.name
             ]
             split_video_frames(
-                modality,
+                modality_iterator,
                 frame_format,
                 annotations_for_video,
                 segment_root_dir,
@@ -101,6 +124,7 @@ def split_dataset_frames(
 
 
 def get_narration(annotation):
+    """Get narration from annotation row, defaults to ``"unnarrated"`` if row has no narration column."""
     try:
         return getattr(annotation, NARRATION_COL)
     except AttributeError:
@@ -108,12 +132,24 @@ def get_narration(annotation):
 
 
 def split_video_frames(
-    modality: Modality,
+    modality_iterator: ModalityIterator,
     frame_format: str,
     video_annotations: pd.DataFrame,
     segment_root_dir: Path,
     video_dir: Path,
-):
+) -> None:
+    """Split frames from a single video file stored in ``video_dir`` into segment directories stored
+    in ``segment_root_dir``.
+
+    Args:
+        modality_iterator: Modality iterator
+        frame_format: Old style string format that must contain a single ``%d`` formatter
+            describing file name format of the dumped frames.
+        video_annotations: Dataframe containing rows only corresponding to video frames stored in
+            :param:`video_dir`
+        segment_root_dir: Directory to write split segments to
+        video_dir: Directory containing dumped frames for a single video
+    """
     for annotation in video_annotations.itertuples():
         segment_dir_name = "{video_id}_{index}_{narration}".format(
             index=annotation.Index,
@@ -124,7 +160,9 @@ def split_video_frames(
         segment_dir.mkdir(parents=True, exist_ok=True)
         start_timestamp = getattr(annotation, START_TS_COL)
         stop_timestamp = getattr(annotation, STOP_TS_COL)
-        frame_iterator = modality.frame_iterator(start_timestamp, stop_timestamp)
+        frame_iterator = modality_iterator.frame_iterator(
+            start_timestamp, stop_timestamp
+        )
 
         LOG.info(
             "Linking {video_id} - {narration} - {start}--{stop}".format(

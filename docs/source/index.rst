@@ -1,4 +1,4 @@
-epic-kitchens 
+epic-kitchens
 =============
 
 `EPIC Kitchens`_ is an egocentric vision dataset, visit the website to
@@ -11,7 +11,7 @@ Have a look at `EPIC-mini`_ for example usage.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    epic_kitchens.rst
    cli_tools.rst

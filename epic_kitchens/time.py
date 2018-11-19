@@ -1,4 +1,4 @@
-""" Functions for converting between frames and timestamps """
+"""Functions for converting between frames and timestamps"""
 import numpy as np
 
 _MINUTES_TO_SECONDS = 60
@@ -9,7 +9,7 @@ def timestamp_to_seconds(timestamp: str) -> float:
     """ Convert a timestamp into total number of seconds
 
     Args:
-        timestamp: formatted as "HH:MM:SS[.FractionalPart]"
+        timestamp: formatted as ``HH:MM:SS[.FractionalPart]``
 
     Returns:
         ``timestamp`` converted to seconds
@@ -64,12 +64,13 @@ def seconds_to_timestamp(total_seconds: float) -> str:
 
 def timestamp_to_frame(timestamp: str, fps: float) -> int:
     """ Convert timestamp to frame number given the FPS of the extracted frames
+
     Args:
-        timestamp: formatted as "HH:MM:SS[.FractionalPart]"
+        timestamp: formatted as ``HH:MM:SS[.FractionalPart]``
         fps: frames per second
 
     Returns:
-        frame corresponding to a specific
+        frame corresponding timestamp
 
     Examples:
         >>> timestamp_to_frame("00:00:00", 29.97)
@@ -117,7 +118,6 @@ def flow_frame_count(rgb_frame: int, stride: int, dilation: int) -> int:
         2
         >>> flow_frame_count(6, 1, 3)
         3
-
         >>> flow_frame_count(7, 1, 1)
         6
         >>> flow_frame_count(7, 2, 1)

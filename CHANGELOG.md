@@ -8,6 +8,10 @@
   to view arbitrary action segments RGB or Flow contained in a `EpicVideoDataset`
   using `moviepy`. This is useful when sifting through results per instance.
 
+## Changes
+* Improve documentation and bring it all in line with google doc string
+  standards
+
 # Version 1.5.0
 
 ## Features

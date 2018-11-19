@@ -26,34 +26,38 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
         self,
         video_segment_dir: str,
         annotations_df: pd.DataFrame,
-        frame_size=-1,
-        extension="jpg",
-        labelled=True,
+        frame_size: int = -1,
+        extension: str = "jpg",
+        labelled: bool = True,
     ) -> None:
         """ Gulp all action segments in  ``annotations_df`` reading the dumped frames from
         ``video_segment_dir``
 
         Args:
-            video_segment_dir: Root directory containing segmented frames::
+            video_segment_dir:
+                Root directory containing segmented frames::
 
-                frame-segments/
-                ├── P01
-                │   ├── P01_01
-                │   |   ├── P01_01_0_open-door
-                │   |   |   ├── frame_0000000008.jpg
-                │   |   |   ...
-                │   |   |   ├── frame_0000000202.jpg
-                │   |   ...
-                │   |   ├── P01_01_329_put-down-plate
-                │   |   |   ├── frame_0000098424.jpg
-                │   |   |   ...
-                │   |   |   ├── frame_0000098501.jpg
-                │   ...
+                    frame-segments/
+                    ├── P01
+                    │   ├── P01_01
+                    │   |   ├── P01_01_0_open-door
+                    │   |   |   ├── frame_0000000008.jpg
+                    │   |   |   ...
+                    │   |   |   ├── frame_0000000202.jpg
+                    │   |   ...
+                    │   |   ├── P01_01_329_put-down-plate
+                    │   |   |   ├── frame_0000098424.jpg
+                    │   |   |   ...
+                    │   |   |   ├── frame_0000098501.jpg
+                    │   ...
 
-            annotations_df: DataFrame containing labels to be gulped.
-            frame_size (optional): Size of shortest edge of the frame, if not already this size then it will
+            annotations_df:
+                DataFrame containing labels to be gulped.
+            frame_size:
+                Size of shortest edge of the frame, if not already this size then it will
                 be resized.
-            extension (optional): Extension of dumped frames.
+            extension:
+                Extension of dumped frames.
         """
         self.video_segment_dir = video_segment_dir
         self.frame_size = int(frame_size)
@@ -66,11 +70,12 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
         Args:
             slice_element (optional): If not specified all frames for the segment will be returned
 
-        Returns:
-            dictionary with the fields:
+        Yields:
+            dict: dictionary with the fields
+
             * ``meta``: All metadata corresponding to the segment, this is the same as the data
               in the labels csv
-            * ``frames``: list of :py:class:`PIL.Image` corresponding to the frames specified
+            * ``frames``: list of :class:`PIL.Image.Image` corresponding to the frames specified
               in ``slice_element``
             * ``id``: UID corresponding to segment
         """
@@ -128,8 +133,7 @@ class EpicDatasetAdapter(AbstractDatasetAdapter):
 
 
 class EpicFlowDatasetAdapter(EpicDatasetAdapter):
-    """Gulp Dataset Adapter for Gulping flow frames extracted from the EPIC-KITCHENS dataset
-    """
+    """Gulp Dataset Adapter for Gulping flow frames extracted from the EPIC-KITCHENS dataset"""
 
     def iter_data(self, slice_element=None):
         slice_element = slice_element or slice(0, len(self))
