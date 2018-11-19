@@ -8,15 +8,18 @@ def main(args):
     annotations = pd.read_pickle(args.annotations_pkl)
 
     def update_annotation(segment_id, old_segment_metadata):
-        segment_metadata = annotations.loc[int(segment_id)].to_dict()
-        # Update the existing dictionary in case have extra items in
-        # the old_segment_metadata dict that we would lose if we simply replaced it.
-        for key, val in segment_metadata.items():
-            old_segment_metadata[key] = val
-        return old_segment_metadata
+        try:
+            segment_metadata = annotations.loc[int(segment_id)].to_dict()
+            # Update the existing dictionary in case have extra items in
+            # the old_segment_metadata dict that we would lose if we simply replaced it.
+            for key, val in segment_metadata.items():
+                old_segment_metadata[key] = val
+            return old_segment_metadata
+        except IndexError:
+            return None
 
     for dir in args.gulp_dirs:
-        modify_metadata(dir, update_annotation)
+        modify_metadata(dir, update_annotation, drop_nones=args.drop_unknown)
 
 
 if __name__ == "__main__":
