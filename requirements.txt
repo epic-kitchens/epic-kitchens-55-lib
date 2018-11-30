@@ -7,4 +7,4 @@ numpy==1.15.4
 pandas==0.23.4
 typing==3.6.6
 moviepy==0.2.3.5
-ipython==7.1.1
+ipython==7.2.0
