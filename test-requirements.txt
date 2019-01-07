@@ -1,4 +1,4 @@
 mypy==0.650
 pytest==4.0.2
-pytest-cov==2.6.0
+pytest-cov==2.6.1
 scikit-image==0.14.1
