@@ -48,4 +48,4 @@ typecheck:
 	mypy $(LIBRARY_DIR) --ignore-missing-imports
 
 clean:
-	rm -rf dist
+	rm -rf dist build
