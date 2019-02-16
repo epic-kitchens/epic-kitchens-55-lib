@@ -1,3 +1,10 @@
+# Version 1.6.3
+
+## Dependencies
+* Depend on `moviepy` >= 1.0.0 due to `imageio` breaking `ffmpeg` download
+  capabilities.
+
+
 # Version 1.6.2
 
 ## Bug fix

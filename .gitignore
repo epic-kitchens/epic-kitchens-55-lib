@@ -122,3 +122,5 @@ crashlytics-build.properties
 tests/dataset
 tests/system_test_dataset.zip
 .venv
+
+.ropeproject

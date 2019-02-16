@@ -24,7 +24,7 @@ setup(
     install_requires=["gulpio>=500", "pandas", "numpy"],
     extras_require={
         "dev": ["Sphinx", "pygments", "sphinx_rtd_theme", "pytest", "mypy"],
-        "visualisation": ["moviepy", "ipython"],
+        "visualisation": ["moviepy>=1.0.0", "ipython"],
     },
     classifiers=[
         # How mature is this project? Common values are
