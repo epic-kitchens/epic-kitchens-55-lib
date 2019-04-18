@@ -192,6 +192,11 @@ class EpicVideoDataset(VideoDataset):
     def __contains__(self, id):
         return id in self._video_segments
 
+    def __iter__(self):
+        return iter(
+            (self._video_segments[id_] for id_ in sorted(self._video_segments.keys()))
+        )
+
     def _read_segments(
         self, gulp_dir_meta_dict, class_getter: Callable[[Dict[str, Any]], Any]
     ) -> Dict[str, VideoSegment]:

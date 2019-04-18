@@ -145,8 +145,8 @@ def split_video_frames(
         modality_iterator: Modality iterator
         frame_format: Old style string format that must contain a single ``%d`` formatter
             describing file name format of the dumped frames.
-        video_annotations: Dataframe containing rows only corresponding to video frames stored in
-            :param:`video_dir`
+        video_annotations: Dataframe containing rows only corresponding to video frames
+            stored in ``video_dir``
         segment_root_dir: Directory to write split segments to
         video_dir: Directory containing dumped frames for a single video
     """

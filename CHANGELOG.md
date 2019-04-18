@@ -1,3 +1,16 @@
+# Development
+
+## Features
+
+* Add `epic_kitchens.metrics` and `epic_kitchens.scoring` containing method for
+  computing metrics and manipulating model scores. Of particular note is
+  `epic_kitchens.metrics.compute_metrics` which computes top-{1,5} accuracy,
+  many-shot precision and recall for the verb, noun and action prediction tasks.
+
+## Dependencies
+
+* We now depend on `scikit-learn` for computing metrics.
+
 # Version 1.6.3
 
 ## Dependencies

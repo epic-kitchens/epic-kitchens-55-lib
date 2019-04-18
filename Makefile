@@ -27,7 +27,6 @@ tests/system_test_dataset.zip: tests/system_test_dataset.etag
 		curl "$(SYSTEM_TEST_DATASET_URL)" -o "$@";\
 	fi
 
-
 compile:
 	python -m compileall $(LIBRARY_DIR) -j $$(nproc)
 

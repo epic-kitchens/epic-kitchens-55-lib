@@ -21,7 +21,7 @@ setup(
             "segment_epic = epic_kitchens.preprocessing.split_segments:main",
         ]
     },
-    install_requires=["gulpio>=500", "pandas", "numpy"],
+    install_requires=["gulpio>=500", "pandas", "numpy", "scikit-learn"],
     extras_require={
         "dev": ["Sphinx", "pygments", "sphinx_rtd_theme", "pytest", "mypy"],
         "visualisation": ["moviepy>=1.0.0", "ipython"],
