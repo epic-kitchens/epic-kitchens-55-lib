@@ -13,7 +13,7 @@ action-segments.
 .. code-block:: shell
 
     $ python -m epic_kitchens.preprocessing.split_segments \
-        P03 \
+        P03_01 \
         path/to/frames \
         path/to/frame-segments \
         path/to/labels.pkl \
