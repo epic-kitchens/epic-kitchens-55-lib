@@ -16,6 +16,8 @@ _annotation_repository = _annotation_repositories["v1.5.0"]
 ActionClass = namedtuple("ActionClass", ["verb_class", "noun_class"])
 Action = namedtuple("Action", ["verb", "noun"])
 
+_NOUN_CLASS_COUNT = 352
+
 
 def set_version(version: str):
     global _annotation_repository, _annotation_repositories
@@ -141,7 +143,7 @@ def action_id_from_verb_noun(
         >>> action_id_from_verb_noun(np.array([0, 1, 2]), np.array([0, 1, 2]))
         array([  0, 353, 706])
     """
-    return verb * 352 + noun
+    return verb * _NOUN_CLASS_COUNT + noun
 
 
 def noun_id_from_action_id(action: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
@@ -164,7 +166,7 @@ def noun_id_from_action_id(action: Union[int, np.ndarray]) -> Union[int, np.ndar
         array([0, 1, 1])
 
     """
-    return np.mod(action, 352)
+    return np.mod(action, _NOUN_CLASS_COUNT)
 
 
 def verb_id_from_action_id(action_id: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
@@ -184,7 +186,7 @@ def verb_id_from_action_id(action_id: Union[int, np.ndarray]) -> Union[int, np.n
         >>> verb_id_from_action_id(np.array([0, 352, 1, 353]))
         array([0, 1, 0, 1])
     """
-    return np.floor(action_id / 352).astype("int")
+    return np.floor(action_id / _NOUN_CLASS_COUNT).astype("int")
 
 
 def noun_classes() -> pd.DataFrame:
@@ -333,7 +335,7 @@ def test_timestamps(split: str) -> pd.DataFrame:
 def video_descriptions() -> pd.DataFrame:
     """
     Returns:
-        High level description of the task trying to be accomplished in a video
+        High level description of the task trying to be accomplished in a video.
 
         .. include:: meta/video_descriptions.rst
     """
