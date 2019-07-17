@@ -41,6 +41,7 @@ def compute_metrics(
     many_shot_verbs: Optional[np.ndarray] = None,
     many_shot_nouns: Optional[np.ndarray] = None,
     many_shot_actions: Optional[np.ndarray] = None,
+    action_priors: Optional[np.ndarray] = None,
 ) -> MetricsDict:
     """Compute the EPIC action recognition evaluation metrics from ``scores`` given
     ground truth labels in ``groundtruth_df``.
@@ -67,6 +68,9 @@ def compute_metrics(
         many_shot_actions:
             The set of action classes that are considered many shot. If not provided
             they are loaded from :py:func:`epic_kitchens.meta.many_shot_actions`
+        action_priors:
+            A ``(n_verbs, n_nouns)`` shaped array containing the action prior used to
+            weight action predictions.
 
     Returns:
         A dictionary containing all metrics with the following structure::
@@ -114,7 +118,7 @@ def compute_metrics(
 
     if "action" not in scores:
         (clip_verbs, clip_nouns), clip_scores = compute_action_scores(
-            scores["verb"], scores["noun"], top_k=100
+            scores["verb"], scores["noun"], top_k=100, action_priors=action_priors
         )
         scores["action"] = [
             {

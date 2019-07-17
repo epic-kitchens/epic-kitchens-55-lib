@@ -1,9 +1,12 @@
 import numpy as np
-from typing import Tuple, Union, List, Dict
+from typing import Tuple, Union, List, Dict, Optional
 
 
 def compute_action_scores(
-    verb_scores: np.ndarray, noun_scores: np.ndarray, top_k: int = 100
+    verb_scores: np.ndarray,
+    noun_scores: np.ndarray,
+    top_k: int = 100,
+    action_priors: Optional[np.ndarray] = None,
 ) -> Tuple[Tuple[np.ndarray, np.ndarray], np.ndarray]:
     """Given the predicted verb and noun scores, compute action scores by
     :math:`p(A = (v, n)) = p(V = v)p(N = n)`.
@@ -12,6 +15,9 @@ def compute_action_scores(
         verb_scores: 2D array of verb scores ``(n_instances, n_verbs)``.
         noun_scores: 2D array of noun scores ``(n_instances, n_nouns)``.
         top_k: Number of highest scored actions to compute.
+        action_priors: 2D array of action priors ``(n_verbs, n_nouns)``. These don't
+            have to sum to one and as such you can provide the training counts of
+            :math:`(v, n)` occurrences (to minimize numerical stability issues).
 
     Returns:
         A tuple ``((verbs, noun), action_scores)`` where ``verbs`` and ``nouns`` are
@@ -27,10 +33,24 @@ def compute_action_scores(
     top_nouns, top_noun_scores = top_scores(noun_scores, top_k=top_k)
     top_verb_probs = softmax(top_verb_scores)
     top_noun_probs = softmax(top_noun_scores)
+    # shape: (n_instances, n_verbs, n_nouns)
     action_probs_matrix = (
         top_verb_probs[:, :, np.newaxis] * top_noun_probs[:, np.newaxis, :]
     )
     instance_count = action_probs_matrix.shape[0]
+    segments = np.arange(0, instance_count).reshape(-1, 1)
+    if action_priors is not None:
+        expected_action_prior_shape = (verb_scores.shape[-1], noun_scores.shape[-1])
+        if action_priors.shape != expected_action_prior_shape:
+            raise ValueError(
+                "Expected action_priors to have the shape {}, but was {}".format(
+                    expected_action_prior_shape, action_priors.shape
+                )
+            )
+        action_probs_matrix *= action_priors[
+            top_verbs[:, :, np.newaxis], top_nouns[:, np.newaxis, :]
+        ]
+    # shape: (n_instances, n_verbs*n_nouns)
     action_ranks = action_probs_matrix.reshape(instance_count, -1).argsort(axis=-1)[
         :, ::-1
     ]
@@ -38,7 +58,6 @@ def compute_action_scores(
         action_ranks[:, :top_k], shape=action_probs_matrix.shape[1:]
     )
 
-    segments = np.arange(0, instance_count).reshape(-1, 1)
     return (
         (top_verbs[segments, verb_ranks_idx], top_nouns[segments, noun_ranks_idx]),
         action_probs_matrix.reshape(instance_count, -1)[
@@ -124,6 +143,10 @@ def softmax(x: np.ndarray) -> np.ndarray:
         >>> np.all(np.abs(res - np.array([0, 1, 0])) < 0.0001)
         True
         >>> res = softmax(np.array([[0, 200, 10], [0, 10, 200], [200, 0, 10]]))
+        >>> np.argsort(res, axis=1)
+        array([[0, 2, 1],
+               [0, 1, 2],
+               [1, 2, 0]])
         >>> np.sum(res, axis=1)
         array([1., 1., 1.])
         >>> res = softmax(np.array([[0, 200, 10], [0, 10, 200]]))
