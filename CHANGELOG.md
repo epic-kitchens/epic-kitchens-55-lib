@@ -1,5 +1,8 @@
 # Development
 
+
+# Version 1.7.0
+
 ## Features
 
 * Add `epic_kitchens.metrics` and `epic_kitchens.scoring` containing method for
