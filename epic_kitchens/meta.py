@@ -1,10 +1,11 @@
 import pandas as pd
+import numpy as np
 from collections import namedtuple
 
 from epic_kitchens.internal.loading import AnnotationRepository
 
 from pathlib import Path
-from typing import Union, Set
+from typing import Union, Set, List, Tuple, Iterable
 from logging import getLogger
 
 _LOG = getLogger(__name__)
@@ -14,6 +15,8 @@ _annotation_repository = _annotation_repositories["v1.5.0"]
 
 ActionClass = namedtuple("ActionClass", ["verb_class", "noun_class"])
 Action = namedtuple("Action", ["verb", "noun"])
+
+_NOUN_CLASS_COUNT = 352
 
 
 def set_version(version: str):
@@ -105,6 +108,85 @@ def class_to_noun(cls: int) -> str:
 
     """
     return _annotation_repository.noun_classes()["class_key"].loc[cls]
+
+
+def action_tuples_to_ids(action_classes: Iterable[ActionClass]) -> List[int]:
+    """Convert a list of action classes composed of a verb and noun class to a dense action id
+    using the formula: :math:`c_v * 352 + c_n`
+
+    Args:
+        action_classes:
+
+    Returns:
+        action_ids
+
+    """
+    return [action_id_from_verb_noun(verb, noun) for verb, noun in action_classes]
+
+
+def action_id_from_verb_noun(
+    verb: Union[int, np.ndarray], noun: Union[int, np.ndarray]
+) -> Union[int, np.ndarray]:
+    """Map a verb and noun id to a dense action id.
+
+    Examples:
+        >>> action_id_from_verb_noun(0, 0)
+        0
+        >>> action_id_from_verb_noun(0, 1)
+        1
+        >>> action_id_from_verb_noun(0, 351)
+        351
+        >>> action_id_from_verb_noun(1, 0)
+        352
+        >>> action_id_from_verb_noun(1, 1)
+        353
+        >>> action_id_from_verb_noun(np.array([0, 1, 2]), np.array([0, 1, 2]))
+        array([  0, 353, 706])
+    """
+    return verb * _NOUN_CLASS_COUNT + noun
+
+
+def noun_id_from_action_id(action: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
+    """Decode action id to verb id.
+
+    Examples:
+        >>> noun_id_from_action_id(0)
+        0
+        >>> noun_id_from_action_id(1)
+        1
+        >>> noun_id_from_action_id(351)
+        351
+        >>> noun_id_from_action_id(352)
+        0
+        >>> noun_id_from_action_id(353)
+        1
+        >>> noun_id_from_action_id(352 + 351)
+        351
+        >>> noun_id_from_action_id(np.array([0, 1, 353]))
+        array([0, 1, 1])
+
+    """
+    return np.mod(action, _NOUN_CLASS_COUNT)
+
+
+def verb_id_from_action_id(action_id: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
+    """Decode action id to noun id.
+    Args:
+        action_id: Either a single action id, or a :py:class:`np.ndarray` of action ids.
+
+    Examples:
+        >>> verb_id_from_action_id(0)
+        0
+        >>> verb_id_from_action_id(1)
+        0
+        >>> verb_id_from_action_id(352)
+        1
+        >>> verb_id_from_action_id(353)
+        1
+        >>> verb_id_from_action_id(np.array([0, 352, 1, 353]))
+        array([0, 1, 0, 1])
+    """
+    return np.floor(action_id / _NOUN_CLASS_COUNT).astype("int")
 
 
 def noun_classes() -> pd.DataFrame:
@@ -253,7 +335,7 @@ def test_timestamps(split: str) -> pd.DataFrame:
 def video_descriptions() -> pd.DataFrame:
     """
     Returns:
-        High level description of the task trying to be accomplished in a video
+        High level description of the task trying to be accomplished in a video.
 
         .. include:: meta/video_descriptions.rst
     """
