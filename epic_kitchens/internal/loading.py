@@ -78,7 +78,7 @@ class AnnotationRepository:
             version
         )
         if local_dir is None:
-            cache_dir = Path(os.environ.get("XDG_CACHE_HOME", Path.home()))
+            cache_dir = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
             local_dir = cache_dir / "epic_kitchens" / version
         # local_dir.mkdir(exist_ok=True, parents=True)
         self.http_folder = HttpFolder(
