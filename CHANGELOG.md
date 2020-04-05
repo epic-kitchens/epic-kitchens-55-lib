@@ -1,6 +1,13 @@
 # Development
 
 
+# Version 1.7.1
+
+## Changes
+
+* Default path to download files is `~/.cache/epic-kitchens` instead of
+  `~/epic-kitchens`
+
 # Version 1.7.0
 
 ## Features

@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 # -- Project information -----------------------------------------------------
 
 project = "epic-kitchens"
-copyright = "2018, EPIC-KITCHENS"
+copyright = "2020, EPIC-KITCHENS"
 author = "EPIC-KITCHENS"
 
 # The short X.Y version

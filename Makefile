@@ -40,6 +40,9 @@ dist: $(SRC_FILES) compile
 	rm -rf dist
 	python setup.py sdist
 
+dist-upload: dist
+	twine upload dist/*
+
 upload_to_pypi: dist
 	twine upload dist/*
 
