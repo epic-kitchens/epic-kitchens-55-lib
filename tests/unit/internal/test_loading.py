@@ -90,7 +90,10 @@ class TestLoaders:
 class TestAnnotationRepository:
     def test_defaults_to_user_cache_dir_for_storage_location(self):
         repo = AnnotationRepository()
-        assert repo.http_folder.local_dir == Path.home() / "epic_kitchens" / "v1.5.0"
+        assert (
+            repo.http_folder.local_dir
+            == Path.home() / ".cache" / "epic_kitchens" / "v1.5.0"
+        )
 
     def test_uses_version_string_in_storage_location(self):
         version = "v0.0.1"
