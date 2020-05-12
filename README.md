@@ -1,4 +1,4 @@
-# EPIC-KITCHENS python library
+# EPIC-KITCHENS-55 python library
 
 [![CircleCI status badge](https://img.shields.io/circleci/project/github/epic-kitchens/epic-lib/master.svg)](https://circleci.com/gh/epic-kitchens/epic-lib)
 [![codecov](https://codecov.io/gh/epic-kitchens/epic-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/epic-kitchens/epic-lib)
@@ -6,7 +6,7 @@
 [![PyPI](https://img.shields.io/pypi/v/epic-kitchens.svg)](https://pypi.org/project/epic-kitchens/#description)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/epic-kitchens.svg)](https://pypi.org/project/epic-kitchens/)
 
-> A library for easily integrating the EPIC-KITCHENS egocentric dataset in your
+> A library for easily integrating the EPIC-KITCHENS-55 egocentric dataset in your
 > experiments
 
 ## Install
