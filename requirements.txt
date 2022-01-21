@@ -7,5 +7,5 @@ numpy==1.17.0
 pandas==0.25.0
 typing==3.7.4
 moviepy==1.0.0
-ipython==7.7.0
+ipython==7.16.3
 scikit-learn==0.21.3
